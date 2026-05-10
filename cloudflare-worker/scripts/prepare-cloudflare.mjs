@@ -1,11 +1,13 @@
 import { execFileSync } from 'node:child_process';
 import { appendFileSync, readFileSync, writeFileSync } from 'node:fs';
+import { platform } from 'node:os';
 
 const workerName = process.env.WORKER_NAME || 'zjmf-monitor';
 const databaseName = process.env.D1_DATABASE_NAME || `${workerName}-d1`;
+const npx = platform() === 'win32' ? 'npx.cmd' : 'npx';
 
 function runWrangler(args) {
-  return execFileSync('npx', ['wrangler@latest', ...args], {
+  return execFileSync(npx, ['wrangler@latest', ...args], {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   });
