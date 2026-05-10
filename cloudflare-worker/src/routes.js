@@ -89,8 +89,7 @@ export async function handleRequest(request, env) {
 
   if (url.pathname === '/api/admin/run' && request.method === 'POST') {
     const now = Math.floor(Date.now() / 1000);
-    const today = new Date().toISOString().slice(0, 10);
-    return json(await runMonitorOnce({ repo, fetcher: (input, init) => fetch(input, init), now, today }));
+    return json(await runMonitorOnce({ repo, fetcher: (input, init) => fetch(input, init), now }));
   }
 
   if (url.pathname === '/api/admin/notify/test' && request.method === 'POST') {

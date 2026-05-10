@@ -56,10 +56,10 @@ export function advanceState(runtime, health, settings, now) {
   return next;
 }
 
-export function shouldReboot(runtime, server, settings, now, today) {
+export function shouldReboot(runtime, server, settings, now, rebootWindow) {
   if (runtime.state !== STATES.DOWN) return false;
   if (now - runtime.last_reboot_time < settings.reboot_cooldown) return false;
-  const count = runtime.reboot_date === today ? runtime.reboot_count_today : 0;
+  const count = runtime.reboot_date === rebootWindow ? runtime.reboot_count_today : 0;
   const limit = server.daily_reboot_limit || settings.default_daily_reboot_limit;
   return limit <= 0 || count < limit;
 }
@@ -68,10 +68,10 @@ export function applyRebootStart(runtime, now) {
   return transition(runtime, STATES.REBOOTING, now);
 }
 
-export function applyRebootSuccess(runtime, now, today) {
-  const rebootCount = runtime.reboot_date === today ? runtime.reboot_count_today + 1 : 1;
+export function applyRebootSuccess(runtime, now, rebootWindow) {
+  const rebootCount = runtime.reboot_date === rebootWindow ? runtime.reboot_count_today + 1 : 1;
   return transition(
-    { ...runtime, last_reboot_time: now, reboot_initiated_at: now, reboot_count_today: rebootCount, reboot_date: today },
+    { ...runtime, last_reboot_time: now, reboot_initiated_at: now, reboot_count_today: rebootCount, reboot_date: rebootWindow },
     STATES.RECOVERING,
     now,
   );

@@ -22,6 +22,8 @@ test('状态页渲染服务器状态并转义 HTML', () => {
   assert.match(html, /管理面板/);
   assert.match(html, /href="\/admin"/);
   assert.match(html, /运行正常/);
+  assert.match(html, /本小时重启/);
+  assert.doesNotMatch(html, /今日重启/);
   assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.doesNotMatch(html, /<script>alert/);
 });

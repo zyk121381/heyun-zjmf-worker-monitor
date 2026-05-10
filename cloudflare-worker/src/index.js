@@ -10,7 +10,6 @@ export default {
   async scheduled(_event, env, ctx) {
     const repo = new D1Repository(env.DB);
     const now = Math.floor(Date.now() / 1000);
-    const today = new Date().toISOString().slice(0, 10);
-    ctx.waitUntil(runMonitorOnce({ repo, fetcher: (input, init) => fetch(input, init), now, today }));
+    ctx.waitUntil(runMonitorOnce({ repo, fetcher: (input, init) => fetch(input, init), now }));
   },
 };

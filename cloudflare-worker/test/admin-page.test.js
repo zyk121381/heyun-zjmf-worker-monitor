@@ -29,6 +29,8 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.match(html, /webhook_template/);
   assert.match(html, /name="check_interval"/);
   assert.match(html, /name="api_timeout_ms"/);
+  assert.match(html, /每小时重启上限/);
+  assert.doesNotMatch(html, /每日重启上限/);
   assert.match(html, /api_timeout:Math\.max/);
   assert.match(html, /name="api_password" type="text"/);
   assert.match(html, /id="editModal"/);

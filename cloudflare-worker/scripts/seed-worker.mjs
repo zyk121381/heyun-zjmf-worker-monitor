@@ -48,7 +48,9 @@ await post('/api/admin/servers', {
   provider,
   check_method: 'api_only',
   enabled: true,
-  daily_reboot_limit: Number(process.env.ZJMF_DAILY_REBOOT_LIMIT || 3),
+  daily_reboot_limit: Number(
+    process.env.ZJMF_HOURLY_REBOOT_LIMIT || process.env.ZJMF_DAILY_REBOOT_LIMIT || 3,
+  ),
 });
 
 if (process.env.PUSHPLUS_TOKEN) {

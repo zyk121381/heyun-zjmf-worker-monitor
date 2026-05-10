@@ -28,6 +28,7 @@ test('runMonitorOnce 将连续异常服务器推进到 down 并执行重启', as
       recover_timeout: 300,
       default_daily_reboot_limit: 3,
       api_timeout: 60,
+      timezone: 'Asia/Shanghai',
     },
     providers: {
       heyun: { name: 'heyun', api_base_url: 'https://api.example/v1', jwt_token: 'jwt', jwt_expire_at: 9999 },
@@ -41,7 +42,7 @@ test('runMonitorOnce 将连续异常服务器推进到 down 并执行重启', as
         last_check_time: 0,
         last_reboot_time: 100,
         reboot_count_today: 0,
-        reboot_date: '2026-05-10',
+        reboot_date: '2026-05-10T10',
         last_status_value: '',
         state_changed_at: 1000,
         first_failure_at: 1000,
@@ -58,10 +59,16 @@ test('runMonitorOnce 将连续异常服务器推进到 down 并执行重启', as
     return new Response(JSON.stringify({ jwt: 'jwt' }));
   };
 
-  const summary = await runMonitorOnce({ repo, fetcher, now: 1400, today: '2026-05-10' });
+  const summary = await runMonitorOnce({
+    repo,
+    fetcher,
+    now: 1778382000,
+    date: new Date('2026-05-10T03:00:00Z'),
+  });
   assert.equal(summary.checked, 1);
   assert.equal(repo.data.runtimes['4075'].state, 'recovering');
   assert.equal(repo.data.runtimes['4075'].reboot_count_today, 1);
+  assert.equal(repo.data.runtimes['4075'].reboot_date, '2026-05-10T11');
   assert.equal(calls.some((c) => c.url.includes('/hard_reboot')), true);
   assert.equal(repo.events.some((event) => event.new_state === 'down'), true);
 });

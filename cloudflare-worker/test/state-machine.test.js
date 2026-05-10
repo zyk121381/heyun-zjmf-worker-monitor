@@ -44,37 +44,51 @@ test('恢复超时会重新回到 down 并允许再次重启', () => {
   assert.equal(next.last_reboot_time, 0);
 });
 
-test('down 状态满足冷却和每日限制时允许重启', () => {
+test('down 状态满足冷却和每小时限制时允许重启', () => {
   const runtime = createRuntime({
     state: 'down',
     last_reboot_time: 1000,
     reboot_count_today: 1,
-    reboot_date: '2026-05-10',
+    reboot_date: '2026-05-10T14',
   });
   const settings = { reboot_cooldown: 300, default_daily_reboot_limit: 3 };
   const server = { daily_reboot_limit: 0 };
 
-  assert.equal(shouldReboot(runtime, server, settings, 1400, '2026-05-10'), true);
+  assert.equal(shouldReboot(runtime, server, settings, 1400, '2026-05-10T14'), true);
 });
 
-test('同日期重启成功会进入 recovering 并递增今日次数', () => {
-  const runtime = createRuntime({ state: 'rebooting', reboot_count_today: 1, reboot_date: '2026-05-10' });
+test('同小时重启成功会进入 recovering 并递增本小时次数', () => {
+  const runtime = createRuntime({ state: 'rebooting', reboot_count_today: 1, reboot_date: '2026-05-10T14' });
 
-  const next = applyRebootSuccess(runtime, 2000, '2026-05-10');
+  const next = applyRebootSuccess(runtime, 2000, '2026-05-10T14');
   assert.equal(next.state, 'recovering');
   assert.equal(next.last_reboot_time, 2000);
   assert.equal(next.reboot_count_today, 2);
-  assert.equal(next.reboot_date, '2026-05-10');
+  assert.equal(next.reboot_date, '2026-05-10T14');
 });
 
-test('跨日期重启会重置今日次数后再计数', () => {
+test('跨小时重启会重置本小时次数后再计数', () => {
   const runtime = createRuntime({
     state: 'rebooting',
     reboot_count_today: 3,
-    reboot_date: '2026-05-09',
+    reboot_date: '2026-05-10T13',
   });
 
-  const next = applyRebootSuccess(runtime, 2000, '2026-05-10');
+  const next = applyRebootSuccess(runtime, 2000, '2026-05-10T14');
   assert.equal(next.reboot_count_today, 1);
-  assert.equal(next.reboot_date, '2026-05-10');
+  assert.equal(next.reboot_date, '2026-05-10T14');
+});
+
+test('同小时达到上限后阻止重启，下一小时重新允许', () => {
+  const runtime = createRuntime({
+    state: 'down',
+    last_reboot_time: 1000,
+    reboot_count_today: 3,
+    reboot_date: '2026-05-10T14',
+  });
+  const settings = { reboot_cooldown: 300, default_daily_reboot_limit: 3 };
+  const server = { daily_reboot_limit: 3 };
+
+  assert.equal(shouldReboot(runtime, server, settings, 1400, '2026-05-10T14'), false);
+  assert.equal(shouldReboot(runtime, server, settings, 1400, '2026-05-10T15'), true);
 });

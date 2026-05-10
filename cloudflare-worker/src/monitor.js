@@ -1,6 +1,7 @@
 import { TRANSITION_LABELS } from './constants.js';
 import { Notifier } from './notifier.js';
 import { createRuntime, advanceState, shouldReboot, applyRebootStart, applyRebootSuccess } from './state-machine.js';
+import { localDateParts } from './time.js';
 import { ZjmfClient } from './zjmf-client.js';
 
 function transitionLabel(oldState, newState) {
@@ -29,9 +30,15 @@ async function checkApiHealth(client, server, runtime, now) {
   return { health: String(status).toLowerCase() === 'on', runtime: { ...runtime, last_status_value } };
 }
 
-export async function runMonitorOnce({ repo, fetcher = (input, init) => globalThis.fetch(input, init), now, today }) {
+function rebootWindowKey(date, timezone) {
+  const parts = localDateParts(date, timezone);
+  return `${parts.dateKey}T${String(parts.hour).padStart(2, '0')}`;
+}
+
+export async function runMonitorOnce({ repo, fetcher = (input, init) => globalThis.fetch(input, init), now, date = new Date(now * 1000) }) {
   const settings = await repo.getSettings();
   const notifier = new Notifier(settings, fetcher);
+  const rebootWindow = rebootWindowKey(date, settings.timezone || 'Asia/Shanghai');
   const servers = await repo.listEnabledServers();
   let checked = 0;
 
@@ -44,12 +51,12 @@ export async function runMonitorOnce({ repo, fetcher = (input, init) => globalTh
     let nextRuntime = health == null ? { ...withStatus, last_check_time: now } : advanceState(withStatus, health, settings, now);
     await recordTransition(repo, notifier, server, loadedRuntime.state, nextRuntime, now);
 
-    if (shouldReboot(nextRuntime, server, settings, now, today)) {
+    if (shouldReboot(nextRuntime, server, settings, now, rebootWindow)) {
       const rebooting = applyRebootStart(nextRuntime, now);
       await recordTransition(repo, notifier, server, nextRuntime.state, rebooting, now);
       const success = await client.hardReboot(server.id, now);
       if (success) {
-        const recovering = applyRebootSuccess(rebooting, now, today);
+        const recovering = applyRebootSuccess(rebooting, now, rebootWindow);
         await recordTransition(repo, notifier, server, rebooting.state, recovering, now);
         nextRuntime = recovering;
       } else {

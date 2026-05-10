@@ -48,7 +48,7 @@ function row(server) {
       <div><dt>API 状态</dt><dd>${safeStatus}</dd></div>
       <div><dt>最后检查</dt><dd>${fmtTime(server.last_check_time)}</dd></div>
       <div><dt>最后重启</dt><dd>${fmtTime(server.last_reboot_time)}</dd></div>
-      <div><dt>今日重启</dt><dd>${server.reboot_count_today ?? 0} 次</dd></div>
+      <div><dt>本小时重启</dt><dd>${server.reboot_count_today ?? 0} 次</dd></div>
     </dl>
   </article>`;
 }

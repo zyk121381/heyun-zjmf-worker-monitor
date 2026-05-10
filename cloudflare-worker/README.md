@@ -180,6 +180,7 @@ $body = @{
   provider = "heyunidc"
   check_method = "api_only"
   enabled = $true
+  # 字段名沿用 daily_reboot_limit，实际含义是每小时重启上限。
   daily_reboot_limit = 3
 } | ConvertTo-Json -Compress
 
