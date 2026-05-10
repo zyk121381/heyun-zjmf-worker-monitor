@@ -49,7 +49,7 @@ cloudflare-worker/README.md
 | Secret 名称 | 值 | 是否必填 |
 |-------------|----|----------|
 | `CLOUDFLARE_API_TOKEN` | 第 2 步获取的 Token | 必填 |
-| `ZJMF_ADMIN_TOKEN` | 任意强密码字符串 | 必填 |
+| `ZJMF_ADMIN_TOKEN` | 任意强密码字符串（用于登录管理后台） | 必填 |
 | `CLOUDFLARE_ACCOUNT_ID` | 你的 Cloudflare Account ID | 推荐 |
 | `ZJMF_API_ACCOUNT` | 魔方财务登录邮箱或手机号 | 必填 |
 | `ZJMF_API_PASSWORD` | 魔方财务 API 密钥 | 必填 |
@@ -65,8 +65,8 @@ cloudflare-worker/README.md
 
 - 创建或复用 D1 数据库
 - 执行 D1 迁移
-- 注入 `ADMIN_TOKEN` 为 Worker Secret
-- 部署 Worker（状态页 UI + API + 定时监控任务）
+- 注入 `ZJMF_ADMIN_TOKEN` 为 Worker Secret `ADMIN_TOKEN`
+- 部署 Worker（状态页 UI + 管理后台 + API + 定时监控任务）
 - 自动添加服务商、服务器监控配置
 - 如果填写了 `PUSHPLUS_TOKEN`，会自动添加 pushplus 通知
 
@@ -75,6 +75,7 @@ cloudflare-worker/README.md
 工作流成功后，在日志最后查看地址：
 
 - 状态页：`https://<你的仓库名>.<你的 workers.dev 子域>.workers.dev/`
+- 管理后台：`https://<你的仓库名>.<你的 workers.dev 子域>.workers.dev/admin`
 - API：`https://<你的仓库名>.<你的 workers.dev 子域>.workers.dev/api/status`
 
 ## 架构

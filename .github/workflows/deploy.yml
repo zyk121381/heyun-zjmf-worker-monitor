@@ -16,7 +16,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      ADMIN_TOKEN: ${{ secrets.ZJMF_ADMIN_TOKEN || secrets.UPTIMER_ADMIN_TOKEN }}
+      ADMIN_TOKEN: ${{ secrets.ZJMF_ADMIN_TOKEN }}
       WORKER_NAME: ${{ github.event.repository.name }}
       D1_DATABASE_NAME: ${{ github.event.repository.name }}-d1
       ZJMF_API_ACCOUNT: ${{ secrets.ZJMF_API_ACCOUNT }}
@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || (echo "Missing CLOUDFLARE_API_TOKEN" && exit 1)
-          test -n "$ADMIN_TOKEN" || (echo "Missing ZJMF_ADMIN_TOKEN or UPTIMER_ADMIN_TOKEN" && exit 1)
+          test -n "$ADMIN_TOKEN" || (echo "Missing ZJMF_ADMIN_TOKEN" && exit 1)
           test -n "$ZJMF_API_ACCOUNT" || (echo "Missing ZJMF_API_ACCOUNT" && exit 1)
           test -n "$ZJMF_API_PASSWORD" || (echo "Missing ZJMF_API_PASSWORD" && exit 1)
           test -n "$ZJMF_SERVER_ID" || (echo "Missing ZJMF_SERVER_ID" && exit 1)
@@ -71,6 +71,7 @@ jobs:
         run: |
           echo "Worker: ${{ steps.deploy.outputs.worker_url }}"
           echo "Status UI: ${{ steps.deploy.outputs.worker_url }}/"
+          echo "Admin UI: ${{ steps.deploy.outputs.worker_url }}/admin"
           echo "Status API: ${{ steps.deploy.outputs.worker_url }}/api/status"
 
       - name: Optional seed monitor config

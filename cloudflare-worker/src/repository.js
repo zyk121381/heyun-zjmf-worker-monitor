@@ -38,6 +38,18 @@ export class D1Repository {
     return (results || []).map((row) => ({ ...row, enabled: rowToBool(row, 'enabled') }));
   }
 
+  async listServers() {
+    const { results } = await this.db.prepare('SELECT * FROM servers ORDER BY id').all();
+    return (results || []).map((row) => ({ ...row, enabled: rowToBool(row, 'enabled') }));
+  }
+
+  async listProviders() {
+    const { results } = await this.db.prepare(
+      'SELECT name, display_name, api_base_url, api_account, created_at, updated_at FROM providers ORDER BY name',
+    ).all();
+    return results || [];
+  }
+
   async getProvider(name) {
     return await this.db.prepare('SELECT * FROM providers WHERE name = ?1').bind(name).first();
   }

@@ -7,11 +7,13 @@
 - Cron 定时检查，默认 `*/5 * * * *`
 - D1 持久化：服务商、服务器、运行状态、事件、设置
 - 5 状态机：`healthy -> suspect -> down -> rebooting -> recovering`
+- 管理后台：`GET /admin`，使用 `ZJMF_ADMIN_TOKEN` 登录
 - 魔方财务 API：
   - `POST /v1/login_api?account=xx&password=xx`
   - `GET /v1/hosts/:id/module/status?type=host`
   - `PUT /v1/hosts/:id/module/hard_reboot`
 - 管理 API：
+  - `GET /api/admin/overview`
   - `POST /api/admin/providers`
   - `POST /api/admin/servers`
   - `POST /api/admin/settings`
@@ -49,7 +51,7 @@ Cloudflare Worker 不能执行本机 ICMP `ping`，所以当前 Worker 版只支
 | Secret 名称 | 值 | 是否必填 |
 |-------------|----|----------|
 | `CLOUDFLARE_API_TOKEN` | 第 2 步获取的 Token | 必填 |
-| `ZJMF_ADMIN_TOKEN` | 任意强密码字符串 | 必填 |
+| `ZJMF_ADMIN_TOKEN` | 任意强密码字符串（用于登录管理后台） | 必填 |
 | `CLOUDFLARE_ACCOUNT_ID` | 你的 Cloudflare Account ID | 推荐 |
 | `ZJMF_API_ACCOUNT` | 魔方财务登录邮箱或手机号 | 必填 |
 | `ZJMF_API_PASSWORD` | 魔方财务 API 密钥 | 必填 |
@@ -65,8 +67,8 @@ Cloudflare Worker 不能执行本机 ICMP `ping`，所以当前 Worker 版只支
 
 - 创建或复用 D1 数据库
 - 执行 D1 迁移
-- 注入 `ADMIN_TOKEN` 为 Worker Secret
-- 部署 Worker（状态页 UI + API + 定时监控任务）
+- 注入 `ZJMF_ADMIN_TOKEN` 为 Worker Secret `ADMIN_TOKEN`
+- 部署 Worker（状态页 UI + 管理后台 + API + 定时监控任务）
 - 自动添加服务商、服务器监控配置
 - 如果填写了 `PUSHPLUS_TOKEN`，会自动添加 pushplus 通知
 
@@ -75,6 +77,7 @@ Cloudflare Worker 不能执行本机 ICMP `ping`，所以当前 Worker 版只支
 工作流成功后，在日志最后查看地址：
 
 - 状态页：`https://<你的仓库名>.<你的 workers.dev 子域>.workers.dev/`
+- 管理后台：`https://<你的仓库名>.<你的 workers.dev 子域>.workers.dev/admin`
 - API：`https://<你的仓库名>.<你的 workers.dev 子域>.workers.dev/api/status`
 
 ## 本地测试
@@ -84,7 +87,7 @@ cd D:\自建功能\魔方财务V3通用云服务器监控异常重启\cloudflare
 npm test
 ```
 
-当前验证结果：`20` 个测试全部通过。
+当前验证结果以 `npm test` 输出为准。
 
 ## 部署前校验
 

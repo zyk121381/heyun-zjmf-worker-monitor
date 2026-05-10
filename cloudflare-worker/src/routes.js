@@ -1,5 +1,6 @@
 import { runMonitorOnce } from './monitor.js';
 import { D1Repository } from './repository.js';
+import { renderAdminPage } from './admin-page.js';
 import { renderStatusPage } from './status-page.js';
 
 function json(data, status = 200) {
@@ -33,12 +34,28 @@ export async function handleRequest(request, env) {
     });
   }
 
+  if (url.pathname === '/admin' && request.method === 'GET') {
+    return new Response(renderAdminPage(), {
+      headers: { 'content-type': 'text/html; charset=utf-8' },
+    });
+  }
+
   if (url.pathname === '/api/status' && request.method === 'GET') {
     return json({ servers: await repo.listStatus() });
   }
 
   if (!url.pathname.startsWith('/api/admin/')) return json({ error: 'NOT_FOUND' }, 404);
   if (!isAuthorized(request, env)) return json({ error: 'UNAUTHORIZED' }, 401);
+
+  if (url.pathname === '/api/admin/overview' && request.method === 'GET') {
+    const settings = await repo.getSettings();
+    return json({
+      settings: { ...settings, pushplus_token: settings.pushplus_token ? '已配置' : '' },
+      providers: await repo.listProviders(),
+      servers: await repo.listServers(),
+      status: await repo.listStatus(),
+    });
+  }
 
   if (url.pathname === '/api/admin/run' && request.method === 'POST') {
     const now = Math.floor(Date.now() / 1000);
