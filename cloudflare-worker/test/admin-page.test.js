@@ -27,6 +27,7 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.match(html, /魔方财务 API/);
   assert.match(html, /HTTP\(S\)/);
   assert.match(html, /TCP 端口/);
+  assert.match(html, /三步检测：HTTP\(S\) \+ TCP \+ API/);
   assert.match(html, /连续失败 3 次/);
   assert.match(html, /webhook_headers/);
   assert.match(html, /webhook_template/);

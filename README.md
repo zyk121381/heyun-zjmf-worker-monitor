@@ -230,6 +230,7 @@ python server_monitor.py --interval 60
 | `tcp` | 通过 TCP 端口连接检测 | 检查 80/443/数据库等端口 |
 | `http_then_api` | HTTP 失败后再用魔方财务 API 复核 | 降低误判后再重启 |
 | `tcp_then_api` | TCP 失败后再用魔方财务 API 复核 | 端口异常后再复核 |
+| `service_then_power` | 依次执行 HTTP(S)、TCP、API 三步检测；服务不可达时用 API 状态决定重启或开机 | 推荐用于自动恢复 |
 
 ### Webhook通知类型
 

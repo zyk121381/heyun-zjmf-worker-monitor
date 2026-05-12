@@ -15,11 +15,11 @@ function eventLevel(newState) {
   return 'info';
 }
 
-async function recordTransition(repo, notifier, server, oldState, nextRuntime, now) {
+async function recordTransition(repo, notifier, server, oldState, nextRuntime, now, options = {}) {
   if (oldState === nextRuntime.state) return;
-  const label = transitionLabel(oldState, nextRuntime.state);
+  const label = options.label || transitionLabel(oldState, nextRuntime.state);
   const level = eventLevel(nextRuntime.state);
-  const message = `${server.name}: ${oldState} -> ${nextRuntime.state}${label ? ` (${label})` : ''}`;
+  const message = options.message || `${server.name}: ${oldState} -> ${nextRuntime.state}${label ? ` (${label})` : ''}`;
   await repo.addEvent({ server_id: server.id, old_state: oldState, new_state: nextRuntime.state, label, level, message, created_at: now });
   await notifier.send(`[${server.name}] ${label || nextRuntime.state}`, message, level);
 }
@@ -36,15 +36,36 @@ async function checkApiHealth(client, server, runtime, now) {
   };
 }
 
+function combinedProbe(results, overrides = {}) {
+  return {
+    ok: overrides.ok ?? results.some((item) => item.ok),
+    statusValue: results.map((item) => item.statusValue).filter(Boolean).join(' -> '),
+    error: results.filter((item) => !item.ok).map((item) => item.error).filter(Boolean).join('；'),
+    latencyMs: results.reduce((sum, item) => sum + Number(item.latencyMs || 0), 0),
+    recoveryAction: overrides.recoveryAction,
+  };
+}
+
 function rebootWindowKey(date, timezone) {
   const parts = localDateParts(date, timezone);
   return parts.dateKey;
+}
+
+async function checkServiceThenPower({ client, server, fetcher, tcpConnector, now }) {
+  const http = await checkHttpHealth({ server, fetcher });
+  const tcp = await checkTcpHealth({ server, connector: tcpConnector });
+  const api = await checkApiHealth(client, server, {}, now);
+  const powerState = String(api.statusValue || '').toLowerCase();
+  const serviceOk = http.ok || tcp.ok;
+  const recoveryAction = serviceOk ? '' : powerState === 'off' ? 'power_on' : powerState === 'on' ? 'reboot' : 'none';
+  return combinedProbe([http, tcp, api], { ok: serviceOk, recoveryAction });
 }
 
 async function probeServer({ client, server, fetcher, tcpConnector, now }) {
   const method = server.check_method || 'api_only';
   if (method === 'http') return await checkHttpHealth({ server, fetcher });
   if (method === 'tcp') return await checkTcpHealth({ server, connector: tcpConnector });
+  if (method === 'service_then_power') return await checkServiceThenPower({ client, server, fetcher, tcpConnector, now });
   if (method === 'http_then_api') {
     const http = await checkHttpHealth({ server, fetcher });
     return http.ok ? http : await checkApiHealth(client, server, {}, now);
@@ -82,15 +103,20 @@ export async function runMonitorOnce({ repo, fetcher = (input, init) => globalTh
     await recordTransition(repo, notifier, server, loadedRuntime.state, nextRuntime, now);
 
     if (shouldReboot(nextRuntime, server, settings, now, rebootWindow, recentRebootCount)) {
-      const rebooting = applyRebootStart(nextRuntime, now);
-      await recordTransition(repo, notifier, server, nextRuntime.state, rebooting, now);
-      const success = await client.hardReboot(server.id, now);
-      if (success) {
-        const recovering = applyRebootSuccess(rebooting, now, rebootWindow, recentRebootCount);
-        await recordTransition(repo, notifier, server, rebooting.state, recovering, now);
-        nextRuntime = recovering;
-      } else {
-        nextRuntime = { ...rebooting, state: 'down', state_changed_at: now };
+      const action = probe.recoveryAction === undefined ? 'reboot' : probe.recoveryAction;
+      if (action !== 'none') {
+        const rebooting = applyRebootStart(nextRuntime, now);
+        const startLabel = action === 'power_on' ? '触发开机' : '触发重启';
+        const doneLabel = action === 'power_on' ? '开机指令已发送' : '重启指令已发送';
+        await recordTransition(repo, notifier, server, nextRuntime.state, rebooting, now, { label: startLabel });
+        const success = action === 'power_on' ? await client.powerOn(server.id, now) : await client.hardReboot(server.id, now);
+        if (success) {
+          const recovering = applyRebootSuccess(rebooting, now, rebootWindow, recentRebootCount);
+          await recordTransition(repo, notifier, server, rebooting.state, recovering, now, { label: doneLabel });
+          nextRuntime = recovering;
+        } else {
+          nextRuntime = { ...rebooting, state: 'down', state_changed_at: now };
+        }
       }
     }
 

@@ -118,4 +118,16 @@ export class ZjmfClient {
     }
     return true;
   }
+
+  async powerOn(hostId, now) {
+    const url = new URL(`${this.provider.api_base_url}/hosts/${hostId}/module/on`);
+    const response = await this.request('PUT', url, now);
+    if (!response?.ok) return false;
+    const data = await readJson(response);
+    if (typeof data?.status === 'number' && data.status !== 200) {
+      this.lastError = data.msg || `API status ${data.status}`;
+      return false;
+    }
+    return true;
+  }
 }

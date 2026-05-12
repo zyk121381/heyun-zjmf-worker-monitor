@@ -83,6 +83,21 @@ test('hardReboot 在 JSON status 非 200 时判定失败', async () => {
   assert.equal(await client.hardReboot('4075', 1000), false);
 });
 
+test('powerOn 调用开机模块接口', async () => {
+  const calls = [];
+  const fetcher = async (url, init) => {
+    calls.push({ url: String(url), init });
+    if (String(url).includes('login_api')) return jsonResponse({ jwt: 'token-5' });
+    return jsonResponse({ msg: '成功' });
+  };
+  const provider = { api_base_url: 'https://example.test/v1', api_account: 'acct', api_password: 'key' };
+
+  const client = new ZjmfClient(provider, fetcher, 60);
+  assert.equal(await client.powerOn('4075', 1000), true);
+  assert.match(calls.at(-1).url, /hosts\/4075\/module\/on$/);
+  assert.equal(calls.at(-1).init.method, 'PUT');
+});
+
 
 test('ZJMF 请求网络异常时返回 null 而不是抛出', async () => {
   const fetcher = async () => {
