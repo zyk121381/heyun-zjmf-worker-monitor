@@ -31,7 +31,7 @@ cloudflare-worker/README.md
 windows-one-click-deploy/步骤1-一键安装.bat
 ```
 
-它会自动下载 `步骤2-一键部署.bat`、部署脚本和配置模板，并在同目录生成 `one-click.config.jsonc`。
+它会先检查 PowerShell、Node.js、npx；缺少 Node.js/npx 时会尝试通过 winget 自动安装 Node.js LTS，找不到任何 PowerShell 时会尝试通过 winget 安装 PowerShell 7，然后自动下载 `步骤2-一键部署.bat`、部署脚本和配置模板，并在同目录生成 `one-click.config.jsonc`。
 
 ## 快速部署（5 步完成）
 
