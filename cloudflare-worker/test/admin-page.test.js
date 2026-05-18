@@ -63,6 +63,7 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.match(html, /--bg:#f5f7fb/);
   assert.match(html, /管理后台登录后会显示/);
   assert.match(html, /localStorage\.getItem\('zjmf_admin_token'\)/);
+  assert.doesNotMatch(html, /if\(token\)enter\(\)\.catch/);
   assert.match(html, /syncSelectedHost/);
   assert.doesNotMatch(html, /服务器 IP|1\.2\.3\.4/);
   assert.doesNotMatch(html, /super-secret-admin-password/);
