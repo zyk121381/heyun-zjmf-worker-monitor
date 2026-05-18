@@ -29,9 +29,9 @@ cloudflare-worker/README.md
 
 1. Fork 本仓库。
 2. 下载安装脚本：
-   - [点击下载：步骤1-一键安装脚本](https://github.com/loqwe/heyun-zjmf-worker-monitor/raw/main/windows-one-click-deploy/步骤1-一键安装脚本.bat)
+   - [点击下载：步骤1-一键安装脚本](https://github.com/loqwe/heyun-zjmf-worker-monitor/releases/download/release-step1-bat-v1/step1-install.bat)
    - 保存到你想部署的目录，例如 `D:\heyun-zjmf-worker-monitor\`
-   - 这是中文文件名下载链接，点击后会直接下载成 `步骤1-一键安装脚本.bat`
+   - 这是 Release 附件下载链接，点击后会下载 `step1-install.bat`
 3. 准备脚本要填写的信息：
    - **Cloudflare Token**：打开 <https://dash.cloudflare.com/profile/api-tokens>，点击 **创建令牌**，在 API 令牌模板里选择 **编辑 Cloudflare Workers**，点击 **使用模板**；再点击 **增加更多帐户**，添加 **D1 / 编辑**；账户资源选择 **包括所有账户**，区域资源选择 **包括所有区域**；最后点击 **继续以显示摘要**，再点击 **创建令牌**，复制生成的 Token。
    - **Cloudflare Account ID**：进入 Cloudflare 账户主页，在右侧三个点里点击 **复制账户 ID**；如果脚本检测到账户 ID，也可以直接复制脚本显示的值。
