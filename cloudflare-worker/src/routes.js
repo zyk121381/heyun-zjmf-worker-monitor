@@ -106,6 +106,11 @@ export async function handleRequest(request, env) {
   const repo = new D1Repository(env.DB);
 
   if ((url.pathname === '/' || url.pathname === '/status') && request.method === 'GET') {
+    if (url.pathname === '/' && (await repo.getSetting('setup_completed', '0')) !== '1') {
+      return new Response(renderAdminPage(), {
+        headers: { 'content-type': 'text/html; charset=utf-8' },
+      });
+    }
     return new Response(renderStatusPage(await publicStatus(repo)), {
       headers: { 'content-type': 'text/html; charset=utf-8' },
     });

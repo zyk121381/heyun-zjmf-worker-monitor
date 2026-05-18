@@ -2,14 +2,24 @@ export function extractJwt(data) {
   return data?.jwt || data?.data?.jwt || '';
 }
 
-export function extractHosts(data) {
-  const raw = data?.data;
-  if (Array.isArray(raw)) return raw.filter((item) => item && typeof item === 'object');
-  if (raw && typeof raw === 'object') {
-    const hosts = raw.host || raw.list || [];
-    return Array.isArray(hosts) ? hosts.filter((item) => item && typeof item === 'object') : [];
+function validHosts(value) {
+  return Array.isArray(value) ? value.filter((item) => item && typeof item === 'object') : [];
+}
+
+function findHosts(raw, depth = 0) {
+  if (depth > 3) return [];
+  const arrayHosts = validHosts(raw);
+  if (arrayHosts.length) return arrayHosts;
+  if (!raw || typeof raw !== 'object') return [];
+  for (const key of ['host', 'hosts', 'list', 'lists', 'items', 'records', 'products']) {
+    const hosts = validHosts(raw[key]);
+    if (hosts.length) return hosts;
   }
-  return [];
+  return findHosts(raw.data || raw.result || raw.rows, depth + 1);
+}
+
+export function extractHosts(data) {
+  return findHosts(data?.data ?? data);
 }
 
 export function extractStatus(data) {

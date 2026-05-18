@@ -9,6 +9,11 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.match(html, /管理面板/);
   assert.match(html, /ZJMF_ADMIN_TOKEN/);
   assert.match(html, /四步初始化向导/);
+  assert.match(html, /首次打开网站/);
+  assert.match(html, /id="setupWizardModal"/);
+  assert.match(html, /id="setupStep"/);
+  assert.match(html, /下一步/);
+  assert.match(html, /上一步/);
   assert.match(html, /自动获取产品列表/);
   assert.match(html, /魔方财务登录邮箱或手机号/);
   assert.match(html, /魔方财务产品 ID/);
@@ -58,6 +63,7 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.match(html, /--bg:#f5f7fb/);
   assert.match(html, /管理后台登录后会显示/);
   assert.match(html, /localStorage\.getItem\('zjmf_admin_token'\)/);
+  assert.match(html, /syncSelectedHost/);
   assert.doesNotMatch(html, /服务器 IP|1\.2\.3\.4/);
   assert.doesNotMatch(html, /super-secret-admin-password/);
   assert.doesNotMatch(html, /删除功能暂未开放/);

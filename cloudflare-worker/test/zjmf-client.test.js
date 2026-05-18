@@ -19,6 +19,12 @@ test('extractHosts 兼容 data.host、data.list 和 data 数组', () => {
   assert.deepEqual(extractHosts({ data: [{ id: 3 }] }), [{ id: 3 }]);
 });
 
+test('extractHosts 兼容更多魔方财务产品列表结构', () => {
+  assert.deepEqual(extractHosts({ data: { hosts: [{ id: 4 }] } }), [{ id: 4 }]);
+  assert.deepEqual(extractHosts({ host: [{ id: 5 }] }), [{ id: 5 }]);
+  assert.deepEqual(extractHosts({ data: { data: { host: [{ id: 6 }] } } }), [{ id: 6 }]);
+});
+
 test('extractStatus 兼容常见状态字段', () => {
   assert.equal(extractStatus({ data: { status: 'on' } }), 'on');
   assert.equal(extractStatus({ data: { power_state: 'off' } }), 'off');

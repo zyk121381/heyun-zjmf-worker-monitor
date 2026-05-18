@@ -299,6 +299,15 @@ test('公共状态接口不返回服务器 IP', async () => {
   assert.doesNotMatch(text, /203\.0\.113\.10/);
 });
 
+test('未完成初始化时根路径直接显示首次配置向导', async () => {
+  const res = await handleRequest(new Request('https://worker.example/'), env());
+  const text = await res.text();
+
+  assert.equal(res.status, 200);
+  assert.match(text, /首次打开网站/);
+  assert.match(text, /ZJMF_ADMIN_TOKEN/);
+});
+
 test('公共状态接口返回真实天级可用性和事件历史且不泄露地址', async () => {
   const res = await handleRequest(new Request('https://worker.example/api/status'), env({
     events: [

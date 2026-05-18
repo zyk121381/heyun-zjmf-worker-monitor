@@ -1,1 +1,1 @@
-export { renderAdminPage } from './admin-page-v2.js';
+export { renderAdminPage } from './admin-page-v3.js';
