@@ -36,8 +36,8 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.match(html, /#selectedHostPanel \.grid2\{grid-template-columns:repeat\(4,minmax\(0,1fr\)\);gap:10px\}/);
   assert.match(html, /id="selectedHostIp"/);
   assert.match(html, /接口未返回 IP/);
-  assert.match(html, /id="serverIdInput"[^>]*readonly/);
-  assert.match(html, /id="serverNameInput"[^>]*readonly/);
+  assert.doesNotMatch(html, /id="serverIdInput"/);
+  assert.doesNotMatch(html, /id="serverNameInput"/);
   assert.match(html, /修改管理密码/);
   assert.match(html, /setup_completed/);
   assert.match(html, /\/api\/admin\/zjmf\/hosts/);
