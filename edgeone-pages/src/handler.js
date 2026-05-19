@@ -5,7 +5,8 @@ import { KVRepository } from './kv-repository.js';
 import { handleRequest } from './routes.js';
 
 function resolveKv(env = {}) {
-  return env.ZJMF_KV || env.KV || env.EDGEONE_KV;
+  return env.ZJMF_KV || env.KV || env.EDGEONE_KV
+    || globalThis.ZJMF_KV || globalThis.KV || globalThis.EDGEONE_KV;
 }
 
 function nodeTcpConnector(host, port, timeout = 5000) {

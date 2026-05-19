@@ -44,3 +44,24 @@ test('EdgeOne handler 使用 KV 管理接口', async () => {
   assert.equal(res.status, 200);
   assert.equal(data.ok, true);
 });
+
+test('EdgeOne handler 支持全局 KV 绑定变量', async () => {
+  const kv = new MemoryKV();
+  const previous = globalThis.ZJMF_KV;
+  globalThis.ZJMF_KV = kv;
+  try {
+    const res = await handleEdgeOneRequest(new Request('https://edgeone.example/'), {
+      ADMIN_TOKEN: 'admin',
+    });
+    const html = await res.text();
+
+    assert.equal(res.status, 200);
+    assert.match(html, /首次配置|管理面板/);
+  } finally {
+    if (previous === undefined) {
+      delete globalThis.ZJMF_KV;
+    } else {
+      globalThis.ZJMF_KV = previous;
+    }
+  }
+});
