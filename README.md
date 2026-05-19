@@ -26,17 +26,19 @@
 
 打开 [EdgeOne Pages 控制台](https://console.tencentcloud.com/edgeone/pages)，点击 **导入其它仓库**，选择 `loqwe/heyun-zjmf-worker-monitor`。
 
-填写建议：
+按图填写：
 
-| 配置项 | 填写 |
+| 项目 | 值 |
 |---|---|
-| 项目名称 | `zjmf-monitor-edgeone` |
-| Git 仓库 | `loqwe/heyun-zjmf-worker-monitor` |
+| 框架预设 | `Other` |
 | 根目录 | `edgeone-pages` |
-| 安装命令 | `npm install` |
-| 构建命令 | `npm test` |
 | 输出目录 | `.` |
-| 环境变量 | `ADMIN_TOKEN=你的管理后台密码` |
+| 构建命令 | `npm test` |
+| 安装命令 | `npm install` |
+| 环境变量 | `ADMIN_TOKEN=admin` |
+| KV 绑定变量名 | `ZJMF_KV` |
+
+KV 绑定单独设置：进入 KV Storage，绑定 Namespace，变量名填 `ZJMF_KV`，Namespace 选你创建的 `zjmf`。
 
 说明：EdgeOne 版使用 KV 保存配置和事件，定时监控由外部定时器调用 `/api/admin/run`。首次部署后仍需在 EdgeOne 控制台绑定 KV 到变量名 `ZJMF_KV`。
 
