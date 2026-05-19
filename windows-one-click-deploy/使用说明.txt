@@ -41,6 +41,10 @@ https://github.com/你的用户名/heyun-zjmf-worker-monitor
 4. 魔方财务 API
 打开 https://www.heyunidc.cn/apimanage 获取登录邮箱或手机号、API 密钥；产品 ID 可在魔方财务产品详情或部署后在管理后台填写。
 
+可能需要：更新方式
+后续更新首推再次双击 步骤1-一键安装脚本.bat。
+如果想在管理后台点 系统更新 -> 确定更新，再按下面的更新方式准备 GitHub 更新令牌和 GitHub Actions Secrets。
+
 更新方式：
 
 1. 重新运行安装脚本

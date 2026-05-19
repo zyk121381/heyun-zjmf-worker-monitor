@@ -37,6 +37,7 @@ cloudflare-worker/README.md
    - **Cloudflare Account ID**：进入 Cloudflare 账户主页，在右侧三个点里点击 **复制账户 ID**；如果脚本检测到账户 ID，也可以直接复制脚本显示的值。
    - **Fork 后的仓库地址**：打开你 Fork 后的 GitHub 仓库，复制浏览器地址，例如 `https://github.com/你的用户名/heyun-zjmf-worker-monitor`。
    - **魔方财务 API**：打开 <https://www.heyunidc.cn/apimanage>，复制魔方财务登录邮箱或手机号、API 密钥；产品 ID 可部署后在管理后台添加监控项时填写。
+   - **可能需要：更新方式**：后续更新首推再次双击 `步骤1-一键安装脚本.bat`；如果想在管理后台点 **系统更新 → 确定更新**，再按下方“更新方式”准备 GitHub 更新令牌和 GitHub Actions Secrets。
 4. 双击下载得到的 `步骤1-一键安装脚本.bat`，按提示粘贴以上信息。
    如果你是在 PowerShell 当前目录里手动运行，请先 `cd` 到文件所在目录，再输入 `.\步骤1-一键安装脚本.bat`；不要直接粘贴完整路径。
 5. 脚本会自动检查依赖、下载部署文件、生成配置并启动部署。
