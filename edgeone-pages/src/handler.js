@@ -1,5 +1,3 @@
-import net from 'node:net';
-
 import { runMonitorOnce } from './monitor.js';
 import { KVRepository } from './kv-repository.js';
 import { handleRequest } from './routes.js';
@@ -9,24 +7,10 @@ function resolveKv(env = {}) {
     || globalThis.ZJMF_KV || globalThis.KV || globalThis.EDGEONE_KV;
 }
 
-function nodeTcpConnector(host, port, timeout = 5000) {
-  return new Promise((resolve, reject) => {
-    const socket = net.createConnection({ host, port });
-    const timer = setTimeout(() => {
-      socket.destroy();
-      reject(new Error('TCP 连接超时'));
-    }, timeout);
-    socket.once('connect', () => {
-      clearTimeout(timer);
-      socket.end();
-      resolve(true);
-    });
-    socket.once('error', (error) => {
-      clearTimeout(timer);
-      socket.destroy();
-      reject(error);
-    });
-  });
+export function edgeOneTcpConnector(host, port) {
+  void host;
+  void port;
+  return Promise.reject(new Error('EdgeOne Pages 暂不支持 TCP 原生端口探测，请改用 HTTP(S) 或 API 检测'));
 }
 
 function buildEnv(env = {}) {
@@ -34,7 +18,7 @@ function buildEnv(env = {}) {
   return {
     ...env,
     __repo: repo,
-    tcpConnector: nodeTcpConnector,
+    tcpConnector: edgeOneTcpConnector,
     fetcher: env.fetcher || ((input, init) => fetch(input, init)),
   };
 }
@@ -49,7 +33,7 @@ export async function runEdgeOneMonitor(env = {}) {
   return runMonitorOnce({
     repo: edgeEnv.__repo,
     fetcher: edgeEnv.fetcher,
-    tcpConnector: nodeTcpConnector,
+    tcpConnector: edgeOneTcpConnector,
     now,
     force: true,
   });

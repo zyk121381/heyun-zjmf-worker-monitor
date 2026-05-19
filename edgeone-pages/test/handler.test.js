@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { handleEdgeOneRequest } from '../src/handler.js';
+import { handleEdgeOneRequest, edgeOneTcpConnector } from '../src/handler.js';
 
 class MemoryKV {
   constructor() {
@@ -64,4 +64,11 @@ test('EdgeOne handler 支持全局 KV 绑定变量', async () => {
       globalThis.ZJMF_KV = previous;
     }
   }
+});
+
+test('EdgeOne TCP 连接器不依赖 Node 原生模块', async () => {
+  await assert.rejects(
+    () => edgeOneTcpConnector('127.0.0.1', 996, 1000),
+    /EdgeOne Pages 暂不支持 TCP 原生端口探测/,
+  );
 });

@@ -59,6 +59,10 @@ export async function checkTcpHealth({ server, connector = defaultTcpConnector }
       latencyMs: Date.now() - started,
     };
   } catch (error) {
-    return { ok: false, statusValue: `TCP ${port} closed`, error: errorMessage(error), latencyMs: Date.now() - started };
+    const message = errorMessage(error);
+    if (message.includes('不支持')) {
+      return { ok: false, statusValue: 'TCP 不支持', error: message, latencyMs: Date.now() - started };
+    }
+    return { ok: false, statusValue: `TCP ${port} closed`, error: message, latencyMs: Date.now() - started };
   }
 }
