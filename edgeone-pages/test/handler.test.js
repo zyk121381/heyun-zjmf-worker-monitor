@@ -107,6 +107,8 @@ test('管理初始化弹窗支持滚动显示完整内容', async () => {
   assert.match(html, /HTTP\(S\) \+ API（EdgeOne 选这个）/);
   assert.match(html, /HTTP\(S\) \+ TCP \+ API<\/option>/);
   assert.match(html, /probeTcpField is-hidden/);
+  assert.match(html, /#selectedHostPanel\{max-width:560px;padding:14px 16px\}/);
+  assert.match(html, /#selectedHostPanel \.grid2\{grid-template-columns:1fr;gap:10px\}/);
   assert.doesNotMatch(html, /三步检测/);
 });
 
