@@ -90,6 +90,8 @@ test('管理后台页面使用 ZJMF_ADMIN_TOKEN 登录且不嵌入真实密码',
   assert.doesNotMatch(html, /<input value="pushplus" disabled>/);
   assert.match(html, /在状态页显示/);
   assert.match(html, /name="visible_on_status" type="hidden" value="false"/);
+  assert.match(html, /function fieldControl/);
+  assert.match(html, /\[type="checkbox"\]/);
   assert.match(html, /魔方财务 API/);
   assert.match(html, /HTTP\(S\)/);
   assert.match(html, /填一个能访问的域名\+端口\/网页地址/);

@@ -105,6 +105,8 @@ test('管理初始化弹窗支持滚动显示完整内容', async () => {
   assert.match(html, /#setupWizardModal,#notifyModal,#editModal\{align-items:start;overflow:auto\}/);
   assert.match(html, /#setupWizardModal \.setup-modal\{width:min\(1180px,calc\(100vw - 48px\)\);scrollbar-gutter:stable\}/);
   assert.match(html, /name="visible_on_status" type="hidden" value="false"/);
+  assert.match(html, /function fieldControl/);
+  assert.match(html, /\[type="checkbox"\]/);
   assert.match(html, /HTTP\(S\) \+ API（EdgeOne 选这个）/);
   assert.match(html, /HTTP\(S\) \+ TCP \+ API（Cloudflare Worker 选这个）<\/option>/);
   assert.match(html, /统计窗口/);
