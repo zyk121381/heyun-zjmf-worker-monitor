@@ -118,7 +118,8 @@ test('管理初始化弹窗支持滚动显示完整内容', async () => {
   assert.match(html, /<option value="slack">Slack Webhook/);
   assert.match(html, /<option value="discord">Discord Webhook/);
   assert.match(html, /失败阶段静默/);
-  assert.match(html, /notifySwitchColumn/);
+  assert.match(html, /notifyToggleStack/);
+  assert.doesNotMatch(html, /notifySwitchColumn/);
   assert.match(html, /name="notify_failure_silence"/);
   assert.match(html, /不勾选时，检测异常\/确认宕机会通知/);
   assert.match(html, /notify_failure_silence:false/);
