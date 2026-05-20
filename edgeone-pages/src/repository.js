@@ -6,6 +6,12 @@ function numberSetting(value, fallback) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+function boolSetting(value, fallback) {
+  if (value == null || value === '') return fallback;
+  const normalized = String(value).trim().toLowerCase();
+  return normalized === '1' || normalized === 'true' || normalized === 'on' || normalized === 'yes';
+}
+
 function rowToBool(row, key) {
   return Number(row[key]) === 1;
 }
@@ -48,6 +54,7 @@ export class D1Repository {
       webhook_timeout: numberSetting(raw.webhook_timeout, DEFAULT_SETTINGS.webhook_timeout),
       webhook_headers: raw.webhook_headers || DEFAULT_SETTINGS.webhook_headers,
       webhook_template: raw.webhook_template || DEFAULT_SETTINGS.webhook_template,
+      notify_failure_silence: boolSetting(raw.notify_failure_silence, DEFAULT_SETTINGS.notify_failure_silence),
       pushplus_token: raw.pushplus_token || '',
       timezone: raw.timezone || DEFAULT_SETTINGS.timezone,
       setup_completed: raw.setup_completed || '0',

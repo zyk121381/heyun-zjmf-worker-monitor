@@ -92,7 +92,6 @@ test('runMonitorOnce 发送不泄露目标地址的中文详细通知', async ()
       check_interval: 300,
       webhook_url: 'https://hook.example/send',
       webhook_type: 'custom',
-      notify_failure_threshold: 1,
     },
     providers: {
       heyun: { name: 'heyun', api_base_url: 'https://api.example/v1', jwt_token: 'jwt', jwt_expire_at: 9999 },
@@ -125,7 +124,7 @@ test('runMonitorOnce 发送不泄露目标地址的中文详细通知', async ()
   assert.doesNotMatch(hookBodies[0].message, /web\.example|tcp\.example/);
 });
 
-test('runMonitorOnce 默认连续失败 4 次后才发送异常通知', async () => {
+test('runMonitorOnce 勾选失败阶段静默后不发送检测异常通知', async () => {
   const repo = new FakeRepo({
     settings: {
       suspect_threshold: 3,
@@ -137,7 +136,7 @@ test('runMonitorOnce 默认连续失败 4 次后才发送异常通知', async ()
       check_interval: 300,
       webhook_url: 'https://hook.example/send',
       webhook_type: 'custom',
-      notify_failure_threshold: 4,
+      notify_failure_silence: true,
     },
     providers: { heyun: { name: 'heyun', api_base_url: 'https://api.example/v1', jwt_token: 'jwt', jwt_expire_at: 9999 } },
     servers: [{ id: '4075', name: '综合', provider: 'heyun', check_method: 'service_then_power', http_url: 'https://web.example/health', tcp_host: 'tcp.example', tcp_port: 996, daily_reboot_limit: 3 }],
@@ -157,6 +156,41 @@ test('runMonitorOnce 默认连续失败 4 次后才发送异常通知', async ()
   assert.equal(repo.events[0].label, '检测异常');
   assert.equal(hookBodies.length, 0);
   assert.equal(repo.data.runtimes['4075'].state, 'suspect');
+});
+
+test('runMonitorOnce 勾选失败阶段静默后只推送触发开机通知', async () => {
+  const repo = new FakeRepo({
+    settings: {
+      suspect_threshold: 3,
+      reboot_cooldown: 300,
+      recover_timeout: 300,
+      default_daily_reboot_limit: 3,
+      api_timeout: 60,
+      timezone: 'Asia/Shanghai',
+      check_interval: 300,
+      webhook_url: 'https://hook.example/send',
+      webhook_type: 'custom',
+      notify_failure_silence: true,
+    },
+    providers: { heyun: { name: 'heyun', api_base_url: 'https://api.example/v1', jwt_token: 'jwt', jwt_expire_at: 9999 } },
+    servers: [{ id: '4075', name: '测试机', provider: 'heyun', check_method: 'tcp_then_api', tcp_host: 'tcp.example', tcp_port: 996, daily_reboot_limit: 3 }],
+    runtimes: { 4075: { state: 'suspect', consecutive_failures: 2, consecutive_successes: 0, last_check_time: 0, last_reboot_time: 0, reboot_count_today: 0, reboot_date: '', last_status_value: '', state_changed_at: 1000, first_failure_at: 1000, reboot_initiated_at: 0, scheduled_reboot_date: '' } },
+  });
+  const hookBodies = [];
+  const fetcher = async (url, init) => {
+    if (String(url) === 'https://hook.example/send') {
+      hookBodies.push(JSON.parse(init.body));
+      return new Response('{}');
+    }
+    if (String(url).includes('/module/status')) return new Response(JSON.stringify({ data: { status: 'off' } }));
+    if (String(url).includes('/module/on')) return new Response(JSON.stringify({ msg: '成功' }));
+    return new Response(JSON.stringify({ jwt: 'jwt' }));
+  };
+
+  await runMonitorOnce({ repo, fetcher, tcpConnector: async () => false, now: 1778382000 });
+
+  assert.deepEqual(hookBodies.map((body) => body.title), ['【严重】测试机 - 触发开机']);
+  assert.deepEqual(repo.events.map((event) => event.label), ['确认宕机', '触发开机', '开机指令已发送']);
 });
 
 test('runMonitorOnce 忽略旧配置中的定时重启字段', async () => {

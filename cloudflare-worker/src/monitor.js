@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS, TRANSITION_LABELS } from './constants.js';
+import { TRANSITION_LABELS } from './constants.js';
 import { Notifier } from './notifier.js';
 import { checkHttpHealth, checkTcpHealth } from './probe.js';
 import { createRuntime, advanceState, shouldReboot, applyRebootStart, applyRebootSuccess } from './state-machine.js';
@@ -86,17 +86,11 @@ function buildTransitionNotice(server, oldState, nextRuntime, now, label, level,
   };
 }
 
-function notifyFailureThreshold(settings) {
-  const value = Number(settings.notify_failure_threshold || DEFAULT_SETTINGS.notify_failure_threshold);
-  return Number.isFinite(value) && value > 0 ? value : DEFAULT_SETTINGS.notify_failure_threshold;
-}
+const ACTION_ONLY_NOTICE_LABELS = new Set(['触发开机', '触发重启', '恢复成功', '恢复超时']);
 
-function shouldSendTransitionNotice(label, nextRuntime, settings) {
-  const threshold = notifyFailureThreshold(settings);
-  const failures = Number(nextRuntime.consecutive_failures || 0);
-  if (label === '检测异常' || label === '确认宕机') return failures >= threshold;
-  if (label === '虚惊一场') return threshold <= 1;
-  return true;
+function shouldSendTransitionNotice(label, settings) {
+  if (!settings.notify_failure_silence) return true;
+  return ACTION_ONLY_NOTICE_LABELS.has(label);
 }
 
 async function recordTransition(repo, notifier, server, oldState, nextRuntime, now, options = {}) {
@@ -107,7 +101,7 @@ async function recordTransition(repo, notifier, server, oldState, nextRuntime, n
   const message = options.message || `${name}: ${oldState} -> ${nextRuntime.state}${label ? ` (${label})` : ''}`;
   const notice = buildTransitionNotice(server, oldState, nextRuntime, now, label, level, notifier.settings || {});
   await repo.addEvent({ server_id: server.id, old_state: oldState, new_state: nextRuntime.state, label, level, message, created_at: now });
-  if (shouldSendTransitionNotice(label, nextRuntime, notifier.settings || {})) {
+  if (shouldSendTransitionNotice(label, notifier.settings || {})) {
     await notifier.send(notice.title, notice.message, level);
   }
 }

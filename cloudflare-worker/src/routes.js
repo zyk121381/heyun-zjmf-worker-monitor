@@ -4,13 +4,15 @@ import { Notifier } from './notifier.js';
 import { renderAdminPage } from './admin-page.js';
 import { renderStatusPage } from './status-page.js';
 import { ZjmfClient } from './zjmf-client.js';
-import { DEFAULT_SETTINGS } from './constants.js';
-
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
     headers: { 'content-type': 'application/json; charset=utf-8' },
   });
+}
+
+function boolValue(value) {
+  return ['1', 'true', 'on', 'yes'].includes(String(value ?? '').trim().toLowerCase());
 }
 
 async function sha256Hex(value) {
@@ -400,7 +402,7 @@ export async function handleRequest(request, env) {
     await repo.setSetting('check_interval', Number(body.settings?.check_interval || 300));
     await repo.setSetting('api_timeout', Math.max(1, Math.ceil(Number(body.settings?.api_timeout_ms || 60000) / 1000)));
     await repo.setSetting('default_daily_reboot_limit', Number(firstServer.daily_reboot_limit || 3));
-    await repo.setSetting('notify_failure_threshold', Number(body.notification?.notify_failure_threshold || DEFAULT_SETTINGS.notify_failure_threshold));
+    await repo.setSetting('notify_failure_silence', boolValue(body.notification?.notify_failure_silence));
     if (body.notification?.enabled) {
       await repo.setSetting('webhook_type', body.notification.type || 'pushplus');
       await repo.setSetting('webhook_url', body.notification.webhook_url || 'https://www.pushplus.plus/send');
