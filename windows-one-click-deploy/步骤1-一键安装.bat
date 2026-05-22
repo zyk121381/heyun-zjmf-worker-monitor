@@ -40,6 +40,8 @@ call :fix_crlf "%STEP2_FILE%"
 if errorlevel 1 exit /b 1
 call :fetch "%PS1_FILE%" "%PS1_URL%" "deploy-one-click.ps1"
 if errorlevel 1 exit /b 1
+call :fix_utf8_bom "%PS1_FILE%"
+if errorlevel 1 exit /b 1
 call :fetch "%EXAMPLE_FILE%" "%EXAMPLE_URL%" "one-click.config.example.jsonc"
 if errorlevel 1 exit /b 1
 
@@ -118,4 +120,8 @@ exit /b 0
 
 :fix_crlf
 "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -Command "$p='%~1'; $t=Get-Content -LiteralPath $p -Raw -Encoding UTF8; $t=$t -replace '\r?\n', [Environment]::NewLine; [System.IO.File]::WriteAllText($p,$t,[System.Text.UTF8Encoding]::new($false))"
+exit /b %ERRORLEVEL%
+
+:fix_utf8_bom
+"%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -Command "$p='%~1'; $t=Get-Content -LiteralPath $p -Raw -Encoding UTF8; [System.IO.File]::WriteAllText($p,$t,[System.Text.UTF8Encoding]::new($true))"
 exit /b %ERRORLEVEL%

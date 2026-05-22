@@ -29,6 +29,8 @@ test('步骤2一键部署默认刷新源码缓存，避免部署旧版本', () =
 
   assert.match(deployer, /deploy-one-click\.ps1/);
   assert.match(deployer, /-Interactive -RefreshSource/);
+  assert.match(deployer, /normalize_utf8_bom ".\\deploy-one-click\.ps1"/);
+  assert.match(deployer, /UTF8Encoding\]::new\(\$true\)/);
 });
 
 test('步骤1会刷新部署脚本，源码下载优先使用 codeload', () => {
@@ -37,6 +39,8 @@ test('步骤1会刷新部署脚本，源码下载优先使用 codeload', () => {
   const prepare = readFileSync(path.join(repoRoot, 'cloudflare-worker', 'scripts', 'prepare-cloudflare.mjs'), 'utf8');
 
   assert.doesNotMatch(installer, /if exist "%~1" exit \/b 0/);
+  assert.match(installer, /fix_utf8_bom "%PS1_FILE%"/);
+  assert.match(installer, /UTF8Encoding\]::new\(\$true\)/);
   assert.match(script, /codeload\.github\.com\/\$UpstreamRepo\/zip\/refs\/heads\/\$UpstreamRef/);
   assert.match(script, /Invoke-DownloadFile/);
   assert.match(script, /User-Agent/);

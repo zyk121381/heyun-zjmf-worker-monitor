@@ -27,6 +27,9 @@ if not exist ".\deploy-one-click.ps1" (
   exit /b 1
 )
 
+call :normalize_utf8_bom ".\deploy-one-click.ps1"
+if errorlevel 1 exit /b 1
+
 if /I "%~1"=="--self-test" (
   set "ZJMF_ADMIN_TOKEN=admin"
   "%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -File ".\deploy-one-click.ps1" -ConfigPath ".\one-click.config.jsonc" -PreflightOnly
@@ -44,3 +47,7 @@ if not "%SCRIPT_EXIT%"=="0" (
 )
 pause
 exit /b %SCRIPT_EXIT%
+
+:normalize_utf8_bom
+"%PS_EXE%" -NoProfile -ExecutionPolicy Bypass -Command "$p='%~1'; $t=Get-Content -LiteralPath $p -Raw -Encoding UTF8; [System.IO.File]::WriteAllText($p,$t,[System.Text.UTF8Encoding]::new($true))"
+exit /b %ERRORLEVEL%
