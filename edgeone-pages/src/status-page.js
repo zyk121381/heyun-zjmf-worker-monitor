@@ -172,9 +172,9 @@ function eventHistory(servers) {
     .sort((a, b) => Number(b.created_at || 0) - Number(a.created_at || 0))
     .slice(0, 5);
   if (!events.length) {
-    return '<section class="history"><div class="history-head"><h2>事件历史</h2></div><div class="history-card"><p class="history-empty">暂无历史事件</p></div></section>';
+    return '<section class="history"><div class="history-head"><h2>事件历史 · 最近5条</h2></div><div class="history-card"><p class="history-empty">暂无历史事件</p></div></section>';
   }
-  return `<section class="history"><div class="history-head"><h2>事件历史</h2></div><div class="history-card"><ol>${events.map(eventRow).join('')}</ol></div></section>`;
+  return `<section class="history"><div class="history-head"><h2>事件历史 · 最近5条</h2></div><div class="history-card"><ol>${events.map(eventRow).join('')}</ol></div></section>`;
 }
 
 function row(server) {
