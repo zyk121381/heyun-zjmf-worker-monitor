@@ -360,7 +360,8 @@ export function renderStatusPage(servers, settings = {}) {
     .footer-api{font-size:12px}
     .api{color:var(--brand);text-decoration:none;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--brand-light);transition:all .2s}
     .api:hover{background:var(--brand);color:#fff}
-    .footer-version{font-size:12px;color:var(--muted);margin-top:4px}
+    .footer-version{font-size:12px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:4px}
+    .footer-version .commit-icon{width:12px;height:12px;color:var(--brand)}
 
     @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
@@ -384,7 +385,7 @@ export function renderStatusPage(servers, settings = {}) {
   <main>
     <nav class="pageNav"><a class="adminLink" href="/admin">管理面板</a></nav>
     <section class="hero">
-      <span class="tag">Revelation Monitor</span>
+      <span class="tag">Revelation Monitor · ${escapeHtml(COMMIT)}</span>
       <h1>${escapeHtml(siteTitle)}</h1>
       <p class="lead">${escapeHtml(siteDescription)}</p>
     </section>
@@ -399,7 +400,7 @@ export function renderStatusPage(servers, settings = {}) {
         <a href="https://feedback.valerianblog.link/" target="_blank" title="Contact"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.217l7 4.2 7-4.2V4a1 1 0 00-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 002 13h12a1 1 0 00.966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/></svg></a>
       </div>
       <div class="footer-sponsors"><p style="display: inline-flex; align-items: center; margin: 0"><a href="https://www.heyunidc.cn/aff/GXMRNREQ" target="_blank"><img src="https://www.heyunidc.cn/themes/web/www/upload/local68c30272ab53b.png" alt="核云" height="17" style="margin: 0 3px;"></a> | <a href="https://www.cloudflare-cn.com/" target="_blank"><img src="https://cf-assets.cloudflare-cn.com/dzlvafdwdttg/69wNwfiY5mFmgpd9eQFW6j/d5131c08085a977aa70f19e7aada3fa9/1pixel-down__1_.svg" alt="Cloudflare" height="18" style="margin: 0 3px;"></a></p></div>
-      <div class="footer-version">v${escapeHtml(COMMIT)} · ${escapeHtml(BUILD_TIME ? fmtTime(new Date(BUILD_TIME).getTime() / 1000) : fmtTime(Date.now() / 1000))}</div>
+      <div class="footer-version"><svg class="commit-icon" viewBox="0 0 612 612" fill="currentColor"><path d="M608.721 51.908C607.882 23.92 593.087 5.77 567.539 3.33h-1.678L399.459.05h-1.678c-28.827 0-48.579 10.677-60.094 20.591l-.839.839L12.354 346.812c-16.473 16.473-16.473 44.461 0 60.933L204.229 599.62c8.236 8.236 18.913 12.354 30.505 12.354 11.515 0 22.268-4.118 30.505-12.354l159.767-158.93c1.678-1.678 3.279-3.279 4.957-5.796l155.65-155.65c9.914-11.516 27.149-36.224 26.387-70.008l-3.279-157.328zm-45.3 205.907L406.932 414.304c-.839.839-1.678 1.678-1.678 2.44-.839.839-.839 1.678-1.678 2.44L243.809 578.266c-4.957 4.957-13.193 4.957-18.15 0L33.784 386.316c-4.957-4.957-4.957-13.193 0-18.15L358.277 43.672c7.397-5.796 20.591-13.193 39.504-13.193l167.166 3.279c6.559.839 12.354 4.118 13.193 18.913l3.279 157.328c.076 23.107-11.439 40.418-17.998 47.816zM471.145 82.413c-32.106 0-57.654 25.548-57.654 57.654s25.548 57.654 57.654 57.654 57.654-25.548 57.654-57.654-25.548-57.654-57.654-57.654zm0 84.803c-14.795 0-27.149-12.354-27.149-27.149s12.354-27.149 27.149-27.149c14.795 0 27.149 12.354 27.149 27.149s-12.355 27.149-27.149 27.149zm-108.749 149.93c5.796 5.796 5.796 15.634 0 21.43L234.733 466.238c-3.279 3.279-6.558 4.118-10.677 4.118s-7.397-1.678-10.677-4.118c-5.796-5.796-5.796-15.634 0-21.43l127.662-127.662c5.721-5.796 15.635-5.796 21.355 0zm-16.473-88.921l-174.639 174.64c-3.279 3.279-6.558 4.118-10.677 4.118s-7.397-1.678-10.677-4.118c-5.796-5.796-5.796-15.634 0-21.43l174.64-174.639c5.796-5.796 15.634-5.796 21.43 0 5.719 5.719 5.719 14.794-.077 21.429z"/></svg> ${escapeHtml(COMMIT)} · ${escapeHtml(BUILD_TIME ? fmtTime(new Date(BUILD_TIME).getTime() / 1000) : fmtTime(Date.now() / 1000))}</div>
     </footer>
   </main>
 </body>
