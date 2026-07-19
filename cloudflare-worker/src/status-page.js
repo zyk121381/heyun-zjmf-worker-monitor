@@ -30,14 +30,28 @@ function stateLabel(state) {
 
 function svgIcon(type) {
   const icons = {
-    ok: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" stroke="#10c98f" stroke-width="2"/><path d="M5 8l2 2 4-4" stroke="#10c98f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    warn: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1L1 14h14L8 1z" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="6" x2="8" y2="10" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12" r="0.5" fill="#f59e0b"/></svg>',
-    bad: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" stroke="#ef5267" stroke-width="2"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="#ef5267" stroke-width="2" stroke-linecap="round"/></svg>',
-    spin: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v3M8 12v3M1 8h3M12 8h3M3.05 3.05l2.12 2.12M10.83 10.83l2.12 2.12M3.05 12.95l2.12-2.12M10.83 5.17l2.12-2.12" stroke="#ef5267" stroke-width="1.5" stroke-linecap="round"/></svg>',
-    pulse: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" stroke="#10c98f" stroke-width="2" stroke-dasharray="3 3"/></svg>',
-    timelineOk: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="#10c98f"/></svg>',
-    timelineWarn: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3L2 13h12L8 3z" fill="#f59e0b"/></svg>',
-    timelineBad: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="#ef5267"/></svg>',
+    ok: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#10c98f" stroke-width="2"/><path d="M6 10l3 3 5-5" stroke="#10c98f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    warn: '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2L1 18h18L10 2z" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="8" x2="10" y2="12" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="15" r="1" fill="#f59e0b"/></svg>',
+    bad: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#ef5267" stroke-width="2"/><path d="M7 7l6 6M13 7l-6 6" stroke="#ef5267" stroke-width="2" stroke-linecap="round"/></svg>',
+    spin: '<svg viewBox="0 0 20 20" fill="none"><path d="M10 2v4M10 14v4M2 10h4M14 10h4" stroke="#ef5267" stroke-width="2" stroke-linecap="round"/><path d="M4.93 4.93l2.83 2.83M12.24 12.24l2.83 2.83M4.93 15.07l2.83-2.83M12.24 7.76l2.83-2.83" stroke="#ef5267" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    pulse: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#10c98f" stroke-width="2" stroke-dasharray="4 3"/></svg>',
+    healthy: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#10c98f" stroke-width="2"/><path d="M6 10l3 3 5-5" stroke="#10c98f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    suspect: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#f59e0b" stroke-width="2"/><path d="M10 6v5" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14" r="1" fill="#f59e0b"/></svg>',
+    down: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#ef5267" stroke-width="2"/><path d="M10 6v5" stroke="#ef5267" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14" r="1" fill="#ef5267"/></svg>',
+    rebooting: '<svg viewBox="0 0 20 20" fill="none"><path d="M14.5 5.5A7 7 0 1 0 16 10" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/><path d="M14 3v3h3" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    recovering: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#2563eb" stroke-width="2" stroke-dasharray="5 3"/><path d="M7 10l2 2 4-4" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    powerOn: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="11" r="7" stroke="#10c98f" stroke-width="2"/><path d="M10 4v7" stroke="#10c98f" stroke-width="2" stroke-linecap="round"/></svg>',
+    reboot: '<svg viewBox="0 0 20 20" fill="none"><path d="M14.5 5.5A7 7 0 1 0 16 10" stroke="#ef5267" stroke-width="2" stroke-linecap="round"/><path d="M14 3v3h3" stroke="#ef5267" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    restored: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#10c98f" stroke-width="2"/><path d="M6 10l3 3 5-5" stroke="#10c98f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    missed: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#64748b" stroke-width="2"/><path d="M10 6v5M10 14v1" stroke="#64748b" stroke-width="2" stroke-linecap="round"/></svg>',
+    timelineOk: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#10c98f"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    timelineWarn: '<svg viewBox="0 0 16 16" fill="none"><path d="M8 2L2 14h12L8 2z" fill="#f59e0b"/><path d="M8 6v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12" r="0.8" fill="#fff"/></svg>',
+    timelineBad: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#ef5267"/><path d="M6 6l4 4M10 6l-4 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    timelineInfo: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#2563eb"/><path d="M8 5v1M8 7.5v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    timelineReboot: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#f59e0b"/><path d="M5.5 8a2.5 2.5 0 1 1 4 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M9 5.5V8h2.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    timelinePowerOn: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#10c98f"/><path d="M8 4v5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    summaryOk: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#10c98f"/><path d="M6 10l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    summaryBad: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#ef5267"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
   };
   return icons[type] || icons.ok;
 }
@@ -127,7 +141,19 @@ function latencyStats(server) {
 
 function eventRow(event) {
   const level = escapeHtml(event.level || 'info');
-  const iconType = level === 'critical' ? 'timelineBad' : level === 'warning' ? 'timelineWarn' : 'timelineOk';
+  const label = String(event.label || '').toLowerCase();
+  let iconType = 'timelineInfo';
+  if (level === 'critical') {
+    if (label.includes('开机') || label.includes('power')) iconType = 'timelinePowerOn';
+    else if (label.includes('重启') || label.includes('reboot')) iconType = 'timelineReboot';
+    else iconType = 'timelineBad';
+  } else if (level === 'warning') {
+    if (label.includes('重启') || label.includes('reboot')) iconType = 'timelineReboot';
+    else iconType = 'timelineWarn';
+  } else {
+    if (label.includes('恢复') || label.includes('restor')) iconType = 'timelineOk';
+    else iconType = 'timelineInfo';
+  }
   return `<li class="timeline-item level-${level}">
     <time>${escapeHtml(fmtTime(event.created_at))}</time>
     <span class="timeline-dot">${svgIcon(iconType)}</span>
@@ -177,7 +203,7 @@ function row(server) {
       <span class="latency-item">平均 <b>${stats.avg}</b></span>
       <span class="latency-item">最慢 <b>${stats.worst}</b></span>
       <span class="latency-item latest">最新 <b>${stats.latest}</b></span>
-      <span class="time-item">${fmtTime(server.last_check_time).slice(-5)}</span>
+      <span class="time-item">${fmtTime(server.last_check_time)}</span>
     </div>
     <div class="sr-meta">
       <span>24h 重启 ${server.reboot_count_today ?? 0} 次</span>
@@ -196,7 +222,7 @@ function summaryBar(servers) {
   const allHealthy = down === 0 && suspect === 0;
   const overallClass = allHealthy ? 'summary-healthy' : down > 0 ? 'summary-down' : 'summary-suspect';
   const overallText = allHealthy ? '全部运行正常' : `${down} 台异常，${suspect} 台疑似`;
-  const iconSvg = allHealthy ? svgIcon('timelineOk') : svgIcon('timelineBad');
+  const iconSvg = allHealthy ? svgIcon('summaryOk') : svgIcon('summaryBad');
   return `<div class="summary-bar ${overallClass}">
     <span class="summary-icon">${iconSvg}</span>
     <span class="summary-text">${escapeHtml(overallText)}</span>
@@ -208,6 +234,7 @@ export function renderStatusPage(servers, settings = {}) {
   const siteTitle = String(settings.site_title || '服务器自动监控');
   const documentTitle = String(settings.site_title || 'Revelation 服务器监控');
   const siteDescription = String(settings.site_description || 'Cloudflare Worker 按探测间隔执行 API / HTTP(S) / TCP 检测；连续失败 3 次后确认异常并执行重启。');
+  const currentYear = new Date().toLocaleString('en-US', { timeZone: 'Asia/Shanghai', year: 'numeric' });
   const cards = servers.length
     ? `<section class="service-group"><h2 class="group-title">监控概览</h2><div class="grid" role="list">${servers.map(row).join('')}</div></section>`
     : '<p class="empty">暂无启用的监控服务器。</p>';
@@ -279,11 +306,11 @@ export function renderStatusPage(servers, settings = {}) {
     .day-segment.bad{background:var(--bad)}
     .day-empty{display:grid;place-items:center;width:100%;color:var(--muted);font-size:13px}
 
-    .probe-bars{height:32px;background:var(--track);border-radius:8px;padding:4px 2px;display:flex;gap:2px;align-items:flex-end;justify-content:space-between}
-    .probe-bars span{position:relative;display:block;flex:1 1 0;max-width:5px;border-radius:2px;outline:0;transition:all .16s ease}
+    .probe-bars{height:32px;background:var(--track);border-radius:8px;padding:3px 1px;display:flex;gap:1px;align-items:flex-end}
+    .probe-bars span{position:relative;display:block;flex:1 1 0;border-radius:2px 2px 0 0;outline:0;transition:all .16s ease}
     .probe-bars .ok{background:linear-gradient(180deg,#34d399,#10c98f)}
     .probe-bars .bad{background:var(--bad)}
-    .probe-bars .probe-placeholder{background:#d9e4f2;opacity:.8;flex:1 1 0;max-width:5px}
+    .probe-bars .probe-placeholder{background:#d9e4f2;opacity:.8;flex:1 1 0}
 
     .day-segment[data-tip]:hover,.day-segment[data-tip]:focus,.probe-bars span[data-tip]:hover,.probe-bars span[data-tip]:focus{box-shadow:0 0 0 2px rgba(15,27,45,.15);transform:translateY(-6px);z-index:4}
     .day-track span[data-tip]:hover:after,.day-track span[data-tip]:focus:after,.probe-bars span[data-tip]:hover:after,.probe-bars span[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);z-index:10;white-space:pre;min-width:180px;background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 8px 24px rgba(0,0,0,.12);border-radius:10px;padding:10px 12px;color:var(--ink);font-size:12px;line-height:1.5;pointer-events:none}
@@ -314,7 +341,12 @@ export function renderStatusPage(servers, settings = {}) {
     .history-empty{padding:32px;border:1px dashed var(--line);border-radius:var(--card-radius);color:var(--muted);background:rgba(255,255,255,.5);text-align:center}
     .empty{padding:32px;border:1px dashed var(--line);border-radius:var(--card-radius);color:var(--muted);background:rgba(255,255,255,.5);text-align:center}
 
-    footer{margin-top:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,.05);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+    footer{margin-top:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,.05);color:var(--muted);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+    .footer-brand{font-size:13px;color:#8ba0bd}
+    .footer-sponsors{font-size:12px;color:#8ba0bd}
+    .footer-sponsors a{display:inline-flex;align-items:center;vertical-align:middle}
+    .footer-sponsors img{display:inline-block;vertical-align:middle}
+    .footer-api{font-size:12px}
     .api{color:var(--blue);text-decoration:none;font-weight:600}
     .api:hover{text-decoration:underline}
 
@@ -346,7 +378,11 @@ export function renderStatusPage(servers, settings = {}) {
     ${summaryBar(servers)}
     ${cards}
     ${eventHistory(servers)}
-    <footer><span>Revelation 服务器监控系统</span><a class="api" href="/api/status">/api/status</a></footer>
+    <footer>
+      <div class="footer-brand">Copyright &copy; 2022~${currentYear} Revelation</div>
+      <div class="footer-sponsors"><p style="display: inline-flex; align-items: center; margin: 0"><a href="https://www.heyunidc.cn/aff/GXMRNREQ" target="_blank"><img src="https://www.heyunidc.cn/themes/web/www/upload/local68c30272ab53b.png" alt="核云" height="14" style="margin: 0 3px;"></a> | <a href="https://www.cloudflare-cn.com/" target="_blank"><img src="https://cf-assets.cloudflare-cn.com/dzlvafdwdttg/69wNwfiY5mFmgpd9eQFW6j/d5131c08085a977aa70f19e7aada3fa9/1pixel-down__1_.svg" alt="Cloudflare" height="15" style="margin: 0 3px;"></a></p></div>
+      <div class="footer-api"><a class="api" href="/api/status">/api/status</a></div>
+    </footer>
   </main>
 </body>
 </html>`;
