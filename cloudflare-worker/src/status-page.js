@@ -257,14 +257,14 @@ export function renderStatusPage(servers, settings = {}) {
 
     .hero{margin-bottom:28px;padding:24px 28px;background:linear-gradient(135deg,rgba(164,127,73,.08),rgba(164,127,73,.02));border-radius:var(--card-radius);border:1px solid var(--brand-border)}
     .tag{display:inline-block;color:var(--brand);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px;padding:4px 10px;background:var(--brand-light);border-radius:4px}
-    h1{font-size:32px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px;color:var(--brand-dark)}
+    h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:var(--brand-dark)}
     .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:100%}
 
     .summary-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:var(--card-radius);margin-bottom:20px;font-size:14px;font-weight:600;animation:slideDown .35s ease both}
     .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.12),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.3);color:#047857}
     .summary-down{background:linear-gradient(135deg,rgba(196,92,74,.12),rgba(196,92,74,.05));border:1px solid rgba(196,92,74,.3);color:#8b3a2a}
     .summary-suspect{background:linear-gradient(135deg,rgba(212,168,83,.12),rgba(212,168,83,.05));border:1px solid rgba(212,168,83,.3);color:#7a5a10}
-    .summary-icon svg{width:20px;height:20px;display:block}
+    .summary-icon svg{width:24px;height:24px;display:block}
     .summary-text{flex:1}
     .summary-detail{opacity:.7;font-size:13px;font-weight:500}
 
@@ -274,14 +274,14 @@ export function renderStatusPage(servers, settings = {}) {
 
     .status-card{min-width:0;border:1px solid var(--brand-border);background:linear-gradient(180deg,rgba(255,253,249,.98),rgba(250,247,242,.95));backdrop-filter:blur(12px);box-shadow:0 2px 8px rgba(164,127,73,.08),0 8px 24px rgba(164,127,73,.04);border-radius:var(--card-radius);padding:20px;transition:all .25s ease;animation:slideUp .4s ease both}
     .status-card:hover{box-shadow:0 4px 16px rgba(164,127,73,.12),0 16px 40px rgba(164,127,73,.08);transform:translateY(-2px);border-color:var(--brand)}
-    .status-card--healthy{border-left:3px solid var(--ok)}
+    .status-card--healthy{border-left:3px solid var(--brand-border)}
     .status-card--suspect{border-left:3px solid var(--warn)}
     .status-card--down,.status-card--rebooting,.status-card--recovering{border-left:3px solid var(--bad)}
 
     .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
     .name-row{display:flex;gap:12px;align-items:flex-start}
-    .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);margin-top:7px;position:relative;flex-shrink:0}
-    .dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(16,201,143,.2);animation:pulse 2s ease-in-out infinite}
+    .dot{width:12px;height:12px;border-radius:50%;background:var(--brand);margin-top:6px;position:relative;flex-shrink:0}
+    .dot::after{content:'';position:absolute;inset:-5px;border-radius:50%;background:var(--brand-glow);animation:pulse 2s ease-in-out infinite}
     .status-card--suspect .dot{background:var(--warn)}
     .status-card--suspect .dot::after{background:rgba(212,168,83,.2)}
     .status-card--down .dot,.status-card--rebooting .dot,.status-card--recovering .dot{background:var(--bad)}
@@ -336,12 +336,12 @@ export function renderStatusPage(servers, settings = {}) {
     .more:hover{background:var(--brand);color:#fff}
 
     .history-card ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-    .timeline-item{display:grid;grid-template-columns:140px 28px 1fr;gap:10px;align-items:start;padding:12px 14px;border:1px solid var(--brand-border);background:linear-gradient(135deg,rgba(255,253,249,.9),rgba(250,247,242,.8));border-radius:12px;transition:all .2s ease}
+    .timeline-item{display:grid;grid-template-columns:160px 32px 1fr;gap:12px;align-items:start;padding:14px 16px;border:1px solid var(--brand-border);background:linear-gradient(135deg,rgba(255,253,249,.9),rgba(250,247,242,.8));border-radius:12px;transition:all .2s ease}
     .timeline-item:hover{background:var(--panel);box-shadow:0 4px 12px rgba(164,127,73,.1);border-color:var(--brand)}
-    .timeline-item time{color:var(--muted);font-size:12px;font-weight:500}
-    .timeline-dot svg{width:16px;height:16px;display:block}
-    .timeline-item b{display:block;font-size:14px;color:var(--brand-dark)}
-    .timeline-item p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .timeline-item time{color:var(--muted);font-size:13px;font-weight:500}
+    .timeline-dot svg{width:20px;height:20px;display:block}
+    .timeline-item b{display:block;font-size:15px;color:var(--brand-dark)}
+    .timeline-item p{margin:3px 0 0;color:var(--muted);font-size:14px}
     .history-empty{padding:32px;border:2px dashed var(--brand-border);border-radius:var(--card-radius);color:var(--muted);background:var(--brand-light);text-align:center}
     .empty{padding:32px;border:2px dashed var(--brand-border);border-radius:var(--card-radius);color:var(--muted);background:var(--brand-light);text-align:center}
 
@@ -363,21 +363,21 @@ export function renderStatusPage(servers, settings = {}) {
     @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
     @media(max-width:640px){
       main{padding:24px 0 40px}
-      h1{font-size:26px}
+      h1{font-size:22px}
       .hero{padding:16px 20px}
       .summary-bar{flex-wrap:wrap}
       .card-head{flex-direction:column;gap:8px}
       .badges{justify-content:flex-start}
       .card-foot{gap:8px}
       .latency-item.latest{margin-left:0}
-      .timeline-item{grid-template-columns:1fr;gap:6px}
-      .timeline-item time{font-size:11px}
+      .timeline-item{grid-template-columns:1fr;gap:8px}
+      .timeline-item time{font-size:12px}
     }
   </style>
 </head>
 <body>
   <main>
-    <nav class="pageNav"><a class="adminLink" href="/admin">管理面板</a></nav>
+    <!--nav class="pageNav"><a class="adminLink" href="/admin">管理面板</a></nav-->
     <section class="hero">
       <span class="tag">Revelation Monitor</span>
       <h1>${escapeHtml(siteTitle)}</h1>
