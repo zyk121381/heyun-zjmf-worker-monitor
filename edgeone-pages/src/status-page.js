@@ -51,7 +51,8 @@ function svgIcon(type) {
     timelineReboot: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#f59e0b"/><path d="M5.5 8a2.5 2.5 0 1 1 4 2" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M9 5.5V8h2.5" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     timelinePowerOn: '<svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#10c98f"/><path d="M8 4v5" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>',
     summaryOk: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#10c98f"/><path d="M6 10l3 3 5-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    summaryBad: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#ef5267"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+    summaryBad: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#c45c4a"/><path d="M7 7l6 6M13 7l-6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>',
+    summaryWarn: '<svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" fill="#c9952a"/><path d="M10 6v5" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="10" cy="14" r="1" fill="#fff"/></svg>',
   };
   return icons[type] || icons.ok;
 }
@@ -245,9 +246,9 @@ export function renderStatusPage(servers, settings = {}) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(documentTitle)}</title>
   <style>
-    :root{--bg:#f0f4f8;--panel:#fff;--ink:#0f1b2d;--muted:#7b8da8;--line:#d9e2ef;--track:#e8eef7;--ok:#10c98f;--bad:#ef5267;--warn:#f59e0b;--blue:#2563eb;--card-radius:16px}
+    :root{--bg:#f5f3ef;--panel:#fff;--ink:#1a1612;--muted:#7b7068;--line:#e0d8ce;--track:#ede8e0;--ok:#10c98f;--bad:#c45c4a;--warn:#c9952a;--brand:#A47F49;--brand-light:rgba(164,127,73,.1);--brand-border:rgba(164,127,73,.25);--card-radius:16px}
     *{box-sizing:border-box;margin:0;padding:0}
-    body{min-height:100vh;background:linear-gradient(135deg,#f8fafc 0%,#eef2f7 50%,#f0f4f8 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","Microsoft YaHei UI",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+    body{min-height:100vh;background:linear-gradient(135deg,#faf8f5 0%,#f5f0ea 50%,#f0ebe3 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","Microsoft YaHei UI",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
     main{width:min(800px,calc(100% - 24px));margin:0 auto;padding:40px 0 60px}
 
     .pageNav{display:flex;justify-content:flex-end;margin-bottom:20px}
@@ -255,14 +256,14 @@ export function renderStatusPage(servers, settings = {}) {
     .adminLink:hover{background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
 
     .hero{margin-bottom:28px}
-    .tag{display:inline-block;color:var(--ok);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
-    h1{font-size:32px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px;background:linear-gradient(135deg,var(--ink),#2d3a4f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .tag{display:inline-block;color:var(--brand);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
+    h1{font-size:32px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px;background:linear-gradient(135deg,var(--ink),#3d3428);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:560px}
 
     .summary-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:var(--card-radius);margin-bottom:20px;font-size:14px;font-weight:600;animation:slideDown .35s ease both}
-    .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.1),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.2);color:#047857}
-    .summary-down{background:linear-gradient(135deg,rgba(239,82,103,.1),rgba(239,82,103,.05));border:1px solid rgba(239,82,103,.2);color:#b91c1c}
-    .summary-suspect{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.2);color:#92400e}
+    .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.1),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.25);color:#047857}
+    .summary-down{background:linear-gradient(135deg,rgba(196,92,74,.1),rgba(196,92,74,.05));border:1px solid rgba(196,92,74,.25);color:#8b3a2a}
+    .summary-suspect{background:linear-gradient(135deg,rgba(201,149,42,.1),rgba(201,149,42,.05));border:1px solid rgba(201,149,42,.25);color:#7a5a10}
     .summary-icon svg{width:20px;height:20px;display:block}
     .summary-text{flex:1}
     .summary-detail{opacity:.7;font-size:13px;font-weight:500}
@@ -270,7 +271,7 @@ export function renderStatusPage(servers, settings = {}) {
     .group-title{font-size:20px;font-weight:700;margin:0 0 14px;color:var(--ink)}
     .grid{display:grid;gap:16px}
 
-    .status-card{min-width:0;border:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.9);backdrop-filter:blur(12px);box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);border-radius:var(--card-radius);padding:20px;transition:all .25s ease;animation:slideUp .4s ease both}
+    .status-card{min-width:0;border:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.92);backdrop-filter:blur(12px);box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);border-radius:var(--card-radius);padding:20px;transition:all .25s ease;animation:slideUp .4s ease both}
     .status-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06),0 16px 40px rgba(0,0,0,.08);transform:translateY(-2px)}
     .status-card--healthy{border-left:3px solid var(--ok)}
     .status-card--suspect{border-left:3px solid var(--warn)}
@@ -281,9 +282,9 @@ export function renderStatusPage(servers, settings = {}) {
     .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);margin-top:7px;position:relative;flex-shrink:0}
     .dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(16,201,143,.15);animation:pulse 2s ease-in-out infinite}
     .status-card--suspect .dot{background:var(--warn)}
-    .status-card--suspect .dot::after{background:rgba(245,158,11,.15)}
+    .status-card--suspect .dot::after{background:rgba(201,149,42,.15)}
     .status-card--down .dot,.status-card--rebooting .dot,.status-card--recovering .dot{background:var(--bad)}
-    .status-card--down .dot::after,.status-card--rebooting .dot::after,.status-card--recovering .dot::after{background:rgba(239,82,103,.15)}
+    .status-card--down .dot::after,.status-card--rebooting .dot::after,.status-card--recovering .dot::after{background:rgba(196,92,74,.15)}
     .status-card--rebooting .dot{animation:spin 1s linear infinite}
     .status-card--recovering .dot{animation:pulse 1s ease-in-out infinite}
 
@@ -291,11 +292,11 @@ export function renderStatusPage(servers, settings = {}) {
     .method-tag{margin:2px 0 0;font-size:12px;color:var(--muted);font-weight:500}
     .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
     .uptime{background:rgba(16,201,143,.1);color:#047857;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
-    .state{background:rgba(37,99,235,.08);color:var(--blue);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
-    .status-card--down .state{background:rgba(239,82,103,.1);color:#b91c1c}
-    .status-card--rebooting .state{background:rgba(245,158,11,.1);color:#92400e}
-    .status-card--recovering .state{background:rgba(245,158,11,.1);color:#92400e}
-    .status-card--suspect .state{background:rgba(245,158,11,.1);color:#92400e}
+    .state{background:var(--brand-light);color:var(--brand);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+    .status-card--down .state{background:rgba(196,92,74,.1);color:#8b3a2a}
+    .status-card--rebooting .state{background:rgba(201,149,42,.1);color:#7a5a10}
+    .status-card--recovering .state{background:rgba(201,149,42,.1);color:#7a5a10}
+    .status-card--suspect .state{background:rgba(201,149,42,.1);color:#7a5a10}
 
     .caption{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 6px}
     .day-track{height:28px;border-radius:8px;background:var(--track);padding:0 3px;display:flex;gap:2px;align-items:stretch;overflow:visible}
@@ -319,7 +320,7 @@ export function renderStatusPage(servers, settings = {}) {
     .card-foot{display:flex;gap:12px;flex-wrap:wrap;color:#6f819c;margin-top:12px;font-size:13px}
     .latency-item b{color:var(--ink);font-weight:600}
     .latency-item.latest{margin-left:auto;color:var(--muted);font-size:12px}
-    .latency-item.latest b{color:var(--blue)}
+    .latency-item.latest b{color:var(--brand)}
     .time-item{color:var(--muted);font-size:12px}
 
     .sr-meta{font-size:12px;color:#8ba0bd;margin-top:8px;display:flex;gap:6px;align-items:center}
@@ -328,7 +329,7 @@ export function renderStatusPage(servers, settings = {}) {
     .history{margin-top:36px}
     .history-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 14px}
     .history h2{font-size:20px;font-weight:700}
-    .more{color:var(--blue);text-decoration:none;font-weight:600;font-size:14px;transition:opacity .2s}
+    .more{color:var(--brand);text-decoration:none;font-weight:600;font-size:14px;transition:opacity .2s}
     .more:hover{opacity:.7}
 
     .history-card ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -347,7 +348,7 @@ export function renderStatusPage(servers, settings = {}) {
     .footer-sponsors a{display:inline-flex;align-items:center;vertical-align:middle}
     .footer-sponsors img{display:inline-block;vertical-align:middle}
     .footer-api{font-size:12px}
-    .api{color:var(--blue);text-decoration:none;font-weight:600}
+    .api{color:var(--brand);text-decoration:none;font-weight:600}
     .api:hover{text-decoration:underline}
 
     @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}

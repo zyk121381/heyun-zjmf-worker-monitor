@@ -30,7 +30,7 @@ test('状态页渲染服务器状态并转义 HTML', () => {
   assert.match(html, /Revelation 服务器监控/);
   assert.match(html, /服务器自动监控/);
   assert.doesNotMatch(html, /核云服务器<br>自动监控/);
-  assert.match(html, /--bg:#f0f4f8/);
+  assert.match(html, /--bg:#f5f3ef/);
   assert.match(html, /服务/);
   assert.match(html, /监控概览/);
   assert.match(html, /status-card/);
