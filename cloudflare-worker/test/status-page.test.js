@@ -27,7 +27,7 @@ test('状态页渲染服务器状态并转义 HTML', () => {
     },
   ]);
 
-  assert.match(html, /ZJMF 服务器监控/);
+  assert.match(html, /Revelation 服务器监控/);
   assert.match(html, /服务器自动监控/);
   assert.doesNotMatch(html, /核云服务器<br>自动监控/);
   assert.match(html, /--bg:#f0f4f8/);
@@ -64,6 +64,8 @@ test('状态页渲染服务器状态并转义 HTML', () => {
   assert.doesNotMatch(html, /本小时重启|今日重启/);
   assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
   assert.doesNotMatch(html, /<script>alert/);
+  assert.match(html, /svg/);
+  assert.doesNotMatch(html, /✅|⚠️|🔴|🔄|⏳|❓|🚨|🟢/);
 });
 
 test('状态页不显示服务器 IP，名称为 IP 时改用泛化名称', () => {
@@ -120,4 +122,27 @@ test('状态页最近探测条使用真实探测时间和延迟', () => {
   assert.match(html, /探测失败 · -/);
   assert.equal((html.match(/class="probe-placeholder"/g) || []).length, 58);
   assert.doesNotMatch(html, /运行正常 · 9819ms/);
+});
+
+test('状态页延迟数据从所有探测结果计算', () => {
+  const html = renderStatusPage([
+    {
+      id: '8564',
+      name: '测试服务器',
+      state: 'healthy',
+      last_check_time: 1778385053,
+      last_latency_ms: 500,
+      recent_checks: [
+        { ok: true, latency_ms: 100, created_at: 1778385053 },
+        { ok: true, latency_ms: 200, created_at: 1778385000 },
+        { ok: true, latency_ms: 300, created_at: 1778384950 },
+        { ok: false, latency_ms: 0, created_at: 1778384900 },
+      ],
+    },
+  ]);
+
+  assert.match(html, /最快 <b>100ms<\/b>/);
+  assert.match(html, /平均 <b>200ms<\/b>/);
+  assert.match(html, /最慢 <b>300ms<\/b>/);
+  assert.match(html, /最新 <b>100ms<\/b>/);
 });

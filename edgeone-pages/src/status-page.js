@@ -28,6 +28,20 @@ function stateLabel(state) {
   return labels[state] || '未知';
 }
 
+function svgIcon(type) {
+  const icons = {
+    ok: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" stroke="#10c98f" stroke-width="2"/><path d="M5 8l2 2 4-4" stroke="#10c98f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    warn: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1L1 14h14L8 1z" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="8" y1="6" x2="8" y2="10" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="12" r="0.5" fill="#f59e0b"/></svg>',
+    bad: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" stroke="#ef5267" stroke-width="2"/><path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="#ef5267" stroke-width="2" stroke-linecap="round"/></svg>',
+    spin: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v3M8 12v3M1 8h3M12 8h3M3.05 3.05l2.12 2.12M10.83 10.83l2.12 2.12M3.05 12.95l2.12-2.12M10.83 5.17l2.12-2.12" stroke="#ef5267" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    pulse: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" stroke="#10c98f" stroke-width="2" stroke-dasharray="3 3"/></svg>',
+    timelineOk: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="#10c98f"/></svg>',
+    timelineWarn: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3L2 13h12L8 3z" fill="#f59e0b"/></svg>',
+    timelineBad: '<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="5" fill="#ef5267"/></svg>',
+  };
+  return icons[type] || icons.ok;
+}
+
 function isIpAddress(value) {
   return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(String(value || '').trim());
 }
@@ -74,15 +88,15 @@ function probeLatency(check) {
 }
 
 function probeHeight(check) {
-  if (!check.ok) return 9;
+  if (!check.ok) return 8;
   const value = Number(check.latency_ms || 0);
-  return Math.max(9, Math.min(28, 9 + Math.round(value / 500)));
+  return Math.max(8, Math.min(28, 8 + Math.round(value / 500)));
 }
 
 function bars(server, count = 60) {
   const checks = Array.isArray(server.recent_checks) ? server.recent_checks.slice(0, count).reverse() : [];
   const emptyCount = Math.max(0, count - checks.length);
-  const emptySlots = Array.from({ length: emptyCount }, () => '<span class="probe-placeholder" style="height:9px" aria-hidden="true"></span>').join('');
+  const emptySlots = Array.from({ length: emptyCount }, () => '<span class="probe-placeholder" style="height:8px" aria-hidden="true"></span>').join('');
   const realSlots = checks.map((check) => {
     const ok = Boolean(check.ok);
     const label = ok ? '运行正常' : '探测失败';
@@ -92,18 +106,31 @@ function bars(server, count = 60) {
   return `${emptySlots}${realSlots}`;
 }
 
-function latency(server) {
-  const value = Number(server.last_latency_ms || server.latency_ms || 0);
-  const text = value > 0 ? `${value}ms` : '-';
-  return { best: text, avg: text, worst: text };
+function latencyStats(server) {
+  const checks = Array.isArray(server.recent_checks) ? server.recent_checks : [];
+  if (checks.length === 0) {
+    const value = Number(server.last_latency_ms || server.latency_ms || 0);
+    const text = value > 0 ? `${value}ms` : '-';
+    return { best: text, avg: text, worst: text, latest: text };
+  }
+  const latencies = checks.filter(c => c.ok && c.latency_ms > 0).map(c => Number(c.latency_ms));
+  if (latencies.length === 0) {
+    return { best: '-', avg: '-', worst: '-', latest: '-' };
+  }
+  const best = Math.min(...latencies);
+  const worst = Math.max(...latencies);
+  const avg = Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length);
+  const latestCheck = checks[0];
+  const latest = latestCheck && latestCheck.ok && latestCheck.latency_ms > 0 ? `${latestCheck.latency_ms}ms` : '-';
+  return { best: `${best}ms`, avg: `${avg}ms`, worst: `${worst}ms`, latest };
 }
 
 function eventRow(event) {
   const level = escapeHtml(event.level || 'info');
-  const icon = level === 'critical' ? '🚨' : level === 'warning' ? '⚠️' : '✅';
+  const iconType = level === 'critical' ? 'timelineBad' : level === 'warning' ? 'timelineWarn' : 'timelineOk';
   return `<li class="timeline-item level-${level}">
     <time>${escapeHtml(fmtTime(event.created_at))}</time>
-    <span class="timeline-dot">${icon}</span>
+    <span class="timeline-dot">${svgIcon(iconType)}</span>
     <div>
       <b>${escapeHtml(event.server_name || '')}${event.server_name ? ' · ' : ''}${escapeHtml(event.label || '状态变更')}</b>
       <p>${escapeHtml(stateLabel(event.old_state))} → ${escapeHtml(stateLabel(event.new_state))}</p>
@@ -124,7 +151,7 @@ function eventHistory(servers) {
 function row(server) {
   const state = server.state || 'unknown';
   const safeName = escapeHtml(displayName(server));
-  const stats = latency(server);
+  const stats = latencyStats(server);
   const method = checkMethod(server);
   const dayTitle = '近 30 天可用性';
   return `<article class="status-card status-card--${state}" role="listitem">
@@ -149,6 +176,7 @@ function row(server) {
       <span class="latency-item">最快 <b>${stats.best}</b></span>
       <span class="latency-item">平均 <b>${stats.avg}</b></span>
       <span class="latency-item">最慢 <b>${stats.worst}</b></span>
+      <span class="latency-item latest">最新 <b>${stats.latest}</b></span>
       <span class="time-item">${fmtTime(server.last_check_time).slice(-5)}</span>
     </div>
     <div class="sr-meta">
@@ -168,8 +196,9 @@ function summaryBar(servers) {
   const allHealthy = down === 0 && suspect === 0;
   const overallClass = allHealthy ? 'summary-healthy' : down > 0 ? 'summary-down' : 'summary-suspect';
   const overallText = allHealthy ? '全部运行正常' : `${down} 台异常，${suspect} 台疑似`;
+  const iconSvg = allHealthy ? svgIcon('timelineOk') : svgIcon('timelineBad');
   return `<div class="summary-bar ${overallClass}">
-    <span class="summary-icon">${allHealthy ? '🟢' : '🔴'}</span>
+    <span class="summary-icon">${iconSvg}</span>
     <span class="summary-text">${escapeHtml(overallText)}</span>
     <span class="summary-detail">${total} 台服务器 · ${healthy} 台正常</span>
   </div>`;
@@ -177,7 +206,7 @@ function summaryBar(servers) {
 
 export function renderStatusPage(servers, settings = {}) {
   const siteTitle = String(settings.site_title || '服务器自动监控');
-  const documentTitle = String(settings.site_title || 'ZJMF 服务器监控');
+  const documentTitle = String(settings.site_title || 'Revelation 服务器监控');
   const siteDescription = String(settings.site_description || 'Cloudflare Worker 按探测间隔执行 API / HTTP(S) / TCP 检测；连续失败 3 次后确认异常并执行重启。');
   const cards = servers.length
     ? `<section class="service-group"><h2 class="group-title">监控概览</h2><div class="grid" role="list">${servers.map(row).join('')}</div></section>`
@@ -207,7 +236,7 @@ export function renderStatusPage(servers, settings = {}) {
     .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.1),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.2);color:#047857}
     .summary-down{background:linear-gradient(135deg,rgba(239,82,103,.1),rgba(239,82,103,.05));border:1px solid rgba(239,82,103,.2);color:#b91c1c}
     .summary-suspect{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.2);color:#92400e}
-    .summary-icon{font-size:18px}
+    .summary-icon svg{width:20px;height:20px;display:block}
     .summary-text{flex:1}
     .summary-detail{opacity:.7;font-size:13px;font-weight:500}
 
@@ -250,18 +279,20 @@ export function renderStatusPage(servers, settings = {}) {
     .day-segment.bad{background:var(--bad)}
     .day-empty{display:grid;place-items:center;width:100%;color:var(--muted);font-size:13px}
 
-    .probe-bars{height:32px;background:var(--track);border-radius:8px;padding:5px 6px;display:flex;gap:3px;align-items:end}
-    .probe-bars span{position:relative;display:block;width:5px;border-radius:2px;outline:0;transition:all .16s ease}
+    .probe-bars{height:32px;background:var(--track);border-radius:8px;padding:4px 2px;display:flex;gap:2px;align-items:flex-end;justify-content:space-between}
+    .probe-bars span{position:relative;display:block;flex:1 1 0;max-width:5px;border-radius:2px;outline:0;transition:all .16s ease}
     .probe-bars .ok{background:linear-gradient(180deg,#34d399,#10c98f)}
     .probe-bars .bad{background:var(--bad)}
-    .probe-bars .probe-placeholder{background:#d9e4f2;opacity:.8}
+    .probe-bars .probe-placeholder{background:#d9e4f2;opacity:.8;flex:1 1 0;max-width:5px}
 
     .day-segment[data-tip]:hover,.day-segment[data-tip]:focus,.probe-bars span[data-tip]:hover,.probe-bars span[data-tip]:focus{box-shadow:0 0 0 2px rgba(15,27,45,.15);transform:translateY(-6px);z-index:4}
     .day-track span[data-tip]:hover:after,.day-track span[data-tip]:focus:after,.probe-bars span[data-tip]:hover:after,.probe-bars span[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);z-index:10;white-space:pre;min-width:180px;background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 8px 24px rgba(0,0,0,.12);border-radius:10px;padding:10px 12px;color:var(--ink);font-size:12px;line-height:1.5;pointer-events:none}
     .day-track span[data-tip]:hover:before,.day-track span[data-tip]:focus:before,.probe-bars span[data-tip]:hover:before,.probe-bars span[data-tip]:focus:before{content:"";position:absolute;left:50%;bottom:calc(100% + 2px);border:6px solid transparent;border-top-color:#fff;transform:translateX(-50%);z-index:11}
 
-    .card-foot{display:flex;gap:16px;flex-wrap:wrap;color:#6f819c;margin-top:12px;font-size:13px}
+    .card-foot{display:flex;gap:12px;flex-wrap:wrap;color:#6f819c;margin-top:12px;font-size:13px}
     .latency-item b{color:var(--ink);font-weight:600}
+    .latency-item.latest{margin-left:auto;color:var(--muted);font-size:12px}
+    .latency-item.latest b{color:var(--blue)}
     .time-item{color:var(--muted);font-size:12px}
 
     .sr-meta{font-size:12px;color:#8ba0bd;margin-top:8px;display:flex;gap:6px;align-items:center}
@@ -277,7 +308,7 @@ export function renderStatusPage(servers, settings = {}) {
     .timeline-item{display:grid;grid-template-columns:140px 28px 1fr;gap:10px;align-items:start;padding:12px 14px;border:1px solid rgba(0,0,0,.05);background:rgba(255,255,255,.8);border-radius:12px;transition:all .2s ease}
     .timeline-item:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.05)}
     .timeline-item time{color:var(--muted);font-size:12px;font-weight:500}
-    .timeline-dot{font-size:14px;line-height:20px;text-align:center}
+    .timeline-dot svg{width:16px;height:16px;display:block}
     .timeline-item b{display:block;font-size:14px}
     .timeline-item p{margin:2px 0 0;color:var(--muted);font-size:13px}
     .history-empty{padding:32px;border:1px dashed var(--line);border-radius:var(--card-radius);color:var(--muted);background:rgba(255,255,255,.5);text-align:center}
@@ -297,7 +328,8 @@ export function renderStatusPage(servers, settings = {}) {
       .summary-bar{flex-wrap:wrap}
       .card-head{flex-direction:column;gap:8px}
       .badges{justify-content:flex-start}
-      .card-foot{gap:12px}
+      .card-foot{gap:8px}
+      .latency-item.latest{margin-left:0}
       .timeline-item{grid-template-columns:1fr;gap:6px}
       .timeline-item time{font-size:11px}
     }
@@ -307,14 +339,14 @@ export function renderStatusPage(servers, settings = {}) {
   <main>
     <nav class="pageNav"><a class="adminLink" href="/admin">管理面板</a></nav>
     <section class="hero">
-      <span class="tag">ZJMF Monitor</span>
+      <span class="tag">Revelation Monitor</span>
       <h1>${escapeHtml(siteTitle)}</h1>
       <p class="lead">${escapeHtml(siteDescription)}</p>
     </section>
     ${summaryBar(servers)}
     ${cards}
     ${eventHistory(servers)}
-    <footer><span>ZJMF 服务器监控系统</span><a class="api" href="/api/status">/api/status</a></footer>
+    <footer><span>Revelation 服务器监控系统</span><a class="api" href="/api/status">/api/status</a></footer>
   </main>
 </body>
 </html>`;
