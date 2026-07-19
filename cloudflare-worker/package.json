@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
+    "version": "node -e \"const fs=require('fs');let h='dev';try{h=require('child_process').execSync('git rev-parse --short HEAD',{stdio:'pipe'}).toString().trim()}catch{}const t=new Date().toISOString();const p=JSON.parse(fs.readFileSync('package.json','utf8'));fs.writeFileSync('src/version.js',`export const VERSION='${p.version}';export const COMMIT='${h}';export const BUILD_TIME='${t}';`);console.log(`Version: ${p.version}, Commit: ${h}`);\"",
     "prepare:cloudflare": "node scripts/prepare-cloudflare.mjs",
     "seed:worker": "node scripts/seed-worker.mjs",
     "dev": "npx wrangler@latest dev",
-    "deploy": "npx wrangler@latest deploy",
+    "deploy": "npm run version && npx wrangler@latest deploy",
     "d1:migrate:local": "npx wrangler@latest d1 migrations apply zjmf-monitor --local",
     "d1:migrate:remote": "npx wrangler@latest d1 migrations apply zjmf-monitor --remote"
   }

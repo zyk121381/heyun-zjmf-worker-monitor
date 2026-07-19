@@ -1,3 +1,5 @@
+import { VERSION, COMMIT, BUILD_TIME } from './version.js';
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -396,7 +398,7 @@ export function renderStatusPage(servers, settings = {}) {
         <a href="https://feedback.valerianblog.link/" target="_blank"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.217l7 4.2 7-4.2V4a1 1 0 00-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 002 13h12a1 1 0 00.966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/></svg>Contact</a>
       </div>
       <div class="footer-sponsors"><p style="display: inline-flex; align-items: center; margin: 0"><a href="https://www.heyunidc.cn/aff/GXMRNREQ" target="_blank"><img src="https://www.heyunidc.cn/themes/web/www/upload/local68c30272ab53b.png" alt="核云" height="17" style="margin: 0 3px;"></a> | <a href="https://www.cloudflare-cn.com/" target="_blank"><img src="https://cf-assets.cloudflare-cn.com/dzlvafdwdttg/69wNwfiY5mFmgpd9eQFW6j/d5131c08085a977aa70f19e7aada3fa9/1pixel-down__1_.svg" alt="Cloudflare" height="20" style="margin: 0 3px;"></a></p></div>
-      <div class="footer-version">v260719231404 · 最后更新 ${escapeHtml(fmtTime(Date.now() / 1000))}</div>
+      <div class="footer-version">v${escapeHtml(COMMIT)} · 最后更新 ${escapeHtml(BUILD_TIME ? fmtTime(new Date(BUILD_TIME).getTime() / 1000) : fmtTime(Date.now() / 1000))}</div>
     </footer>
   </main>
 </body>
