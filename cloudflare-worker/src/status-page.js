@@ -258,7 +258,8 @@ export function renderStatusPage(servers, settings = {}) {
     .adminLink:hover{background:linear-gradient(135deg,var(--brand),var(--brand-dark));color:#fff;box-shadow:0 4px 16px rgba(164,127,73,.25);transform:translateY(-1px)}
 
     .hero{margin-bottom:28px;padding:24px 28px;background:linear-gradient(135deg,rgba(164,127,73,.08),rgba(164,127,73,.02));border-radius:var(--card-radius);border:1px solid var(--brand-border)}
-    .tag{display:inline-block;color:var(--brand);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px;padding:4px 10px;background:var(--brand-light);border-radius:4px}
+    .tag{display:inline-block;color:var(--brand);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px;padding:4px 10px;background:var(--brand-light);border-radius:4px;vertical-align:middle}
+    .tag svg{width:1em;height:1em;vertical-align:-2px}
     h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin-bottom:8px;color:var(--brand-dark)}
     .lead{color:var(--muted);line-height:1.6;font-size:14px;max-width:100%}
 
