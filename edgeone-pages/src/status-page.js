@@ -258,7 +258,7 @@ export function renderStatusPage(servers, settings = {}) {
     .hero{margin-bottom:28px}
     .tag{display:inline-block;color:var(--brand);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
     h1{font-size:32px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px;background:linear-gradient(135deg,var(--ink),#3d3428);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:560px}
+    .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:100%}
 
     .summary-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:var(--card-radius);margin-bottom:20px;font-size:14px;font-weight:600;animation:slideDown .35s ease both}
     .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.1),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.25);color:#047857}

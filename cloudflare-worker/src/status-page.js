@@ -258,7 +258,7 @@ export function renderStatusPage(servers, settings = {}) {
     .hero{margin-bottom:28px}
     .tag{display:inline-block;color:var(--brand);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
     h1{font-size:32px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px;background:linear-gradient(135deg,var(--ink),#3d3428);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:560px}
+    .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:100%}
 
     .summary-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:var(--card-radius);margin-bottom:20px;font-size:14px;font-weight:600;animation:slideDown .35s ease both}
     .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.1),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.25);color:#047857}
@@ -380,8 +380,8 @@ export function renderStatusPage(servers, settings = {}) {
     ${cards}
     ${eventHistory(servers)}
     <footer>
-      <div class="footer-brand">Copyright &copy; 2022~${currentYear} Revelation</div>
-      <div class="footer-sponsors"><p style="display: inline-flex; align-items: center; margin: 0"><a href="https://www.heyunidc.cn/aff/GXMRNREQ" target="_blank"><img src="https://www.heyunidc.cn/themes/web/www/upload/local68c30272ab53b.png" alt="核云" height="17px" style="margin: 0 3px;"></a> | <a href="https://www.cloudflare-cn.com/" target="_blank"><img src="https://cf-assets.cloudflare-cn.com/dzlvafdwdttg/69wNwfiY5mFmgpd9eQFW6j/d5131c08085a977aa70f19e7aada3fa9/1pixel-down__1_.svg" alt="Cloudflare" height="17px" style="margin: 0 3px;"></a></p></div>
+      <div class="footer-brand">Copyright &copy; 2022~${currentYear} <a href="https://www.valerianblog.link/" target="_blank">Revelation</a></div>
+      <div class="footer-sponsors"><p style="display: inline-flex; align-items: center; margin: 0"><a href="https://www.heyunidc.cn/aff/GXMRNREQ" target="_blank"><img src="https://www.heyunidc.cn/themes/web/www/upload/local68c30272ab53b.png" alt="核云" height="17px" style="margin: 0 3px;"></a> | <a href="https://www.cloudflare-cn.com/" target="_blank"><img src="https://cf-assets.cloudflare-cn.com/dzlvafdwdttg/69wNwfiY5mFmgpd9eQFW6j/d5131c08085a977aa70f19e7aada3fa9/1pixel-down__1_.svg" alt="Cloudflare" height="18px" style="margin: 0 3px;"></a></p></div>
       <!--div class="footer-api"><a class="api" href="/api/status">/api/status</a></div-->
     </footer>
   </main>
