@@ -28,6 +28,17 @@ function stateLabel(state) {
   return labels[state] || '未知';
 }
 
+function stateIcon(state) {
+  const icons = {
+    healthy: '✅',
+    suspect: '⚠️',
+    down: '🔴',
+    rebooting: '🔄',
+    recovering: '⏳',
+  };
+  return icons[state] || '❓';
+}
+
 function isIpAddress(value) {
   return /^\d{1,3}(?:\.\d{1,3}){3}$/.test(String(value || '').trim());
 }
@@ -39,6 +50,7 @@ function displayName(server) {
 function checkMethod(server) {
   const value = String(server.check_method || 'api_only').toLowerCase();
   if (value === 'service_then_power') return '三步检测';
+  if (value === 'http_then_api') return 'HTTP(S)+API';
   if (value.includes('tcp')) return 'tcp';
   if (value.includes('http')) return 'http';
   return 'api';
@@ -97,23 +109,39 @@ function latency(server) {
   return { best: text, avg: text, worst: text };
 }
 
+function uptimeDuration(server) {
+  const state = server.state || 'unknown';
+  if (state === 'healthy') return '稳定运行中';
+  const lastCheck = server.last_check_time;
+  if (!lastCheck) return '无数据';
+  const now = Math.floor(Date.now() / 1000);
+  const diff = now - lastCheck;
+  if (diff < 60) return `${diff}秒前检测`;
+  if (diff < 3600) return `${Math.round(diff / 60)}分钟前检测`;
+  return `${Math.floor(diff / 3600)}小时前检测`;
+}
+
 function eventRow(event) {
   const level = escapeHtml(event.level || 'info');
+  const icon = level === 'critical' ? '🚨' : level === 'warning' ? '⚠️' : '✅';
   return `<li class="timeline-item level-${level}">
     <time>${escapeHtml(fmtTime(event.created_at))}</time>
-    <span class="timeline-dot"></span>
-    <div><b>${escapeHtml(event.server_name || '')}${event.server_name ? ' · ' : ''}${escapeHtml(event.label || '状态变更')}</b><p>${escapeHtml(stateLabel(event.old_state))} -> ${escapeHtml(stateLabel(event.new_state))}</p></div>
+    <span class="timeline-dot">${icon}</span>
+    <div>
+      <b>${escapeHtml(event.server_name || '')}${event.server_name ? ' · ' : ''}${escapeHtml(event.label || '状态变更')}</b>
+      <p>${escapeHtml(stateLabel(event.old_state))} → ${escapeHtml(stateLabel(event.new_state))}</p>
+    </div>
   </li>`;
 }
 
 function eventHistory(servers) {
   const events = servers.flatMap((server) => (server.events || []).map((event) => ({ ...event, server_name: displayName(server) })))
     .sort((a, b) => Number(b.created_at || 0) - Number(a.created_at || 0))
-    .slice(0, 2);
+    .slice(0, 5);
   if (!events.length) {
-    return '<section class="history"><div class="history-head"><h2>事件历史</h2><a class="more" href="/admin">查看更多</a></div><div class="history-card"><p class="history-empty">暂无历史事件</p></div></section>';
+    return '<section class="history"><div class="history-head"><h2>事件历史</h2><a class="more" href="/admin">查看更多 →</a></div><div class="history-card"><p class="history-empty">暂无历史事件</p></div></section>';
   }
-  return `<section class="history"><div class="history-head"><h2>事件历史</h2><a class="more" href="/admin">查看更多</a></div><div class="history-card"><ol>${events.map(eventRow).join('')}</ol></div></section>`;
+  return `<section class="history"><div class="history-head"><h2>事件历史</h2><a class="more" href="/admin">查看更多 →</a></div><div class="history-card"><ol>${events.map(eventRow).join('')}</ol></div></section>`;
 }
 
 function row(server) {
@@ -124,16 +152,50 @@ function row(server) {
   const dayTitle = '近 30 天可用性';
   return `<article class="status-card status-card--${state}" role="listitem">
     <div class="card-head">
-      <div class="name-row"><span class="dot"></span><div><h3>${safeName}</h3><p>${method}</p></div></div>
-      <div class="badges"><span class="uptime">● ${availability(server)}</span><span class="state">${stateLabel(state)}</span></div>
+      <div class="name-row">
+        <span class="dot"></span>
+        <div>
+          <h3>${safeName}</h3>
+          <p class="method-tag">${method}</p>
+        </div>
+      </div>
+      <div class="badges">
+        <span class="uptime">● ${availability(server)}</span>
+        <span class="state">${stateLabel(state)}</span>
+      </div>
     </div>
     <p class="caption">${dayTitle}</p>
     <div class="day-track" aria-label="${dayTitle}">${daySegments(server) || '<span class="day-empty">暂无真实探测记录</span>'}</div>
     <p class="caption">最近 60 次探测</p>
     <div class="probe-bars" aria-label="最近探测详情">${bars(server)}</div>
-    <div class="card-foot"><span>最快 ${stats.best}</span><span>平均 ${stats.avg}</span><span>最慢 ${stats.worst}</span><span>${fmtTime(server.last_check_time).slice(-5)}</span></div>
-    <div class="sr-meta">24 小时重启 ${server.reboot_count_today ?? 0} 次；最后重启 ${fmtTime(server.last_reboot_time)}</div>
+    <div class="card-foot">
+      <span class="latency-item">最快 <b>${stats.best}</b></span>
+      <span class="latency-item">平均 <b>${stats.avg}</b></span>
+      <span class="latency-item">最慢 <b>${stats.worst}</b></span>
+      <span class="time-item">${fmtTime(server.last_check_time).slice(-5)}</span>
+    </div>
+    <div class="sr-meta">
+      <span>24h 重启 ${server.reboot_count_today ?? 0} 次</span>
+      <span class="sep">·</span>
+      <span>最后重启 ${fmtTime(server.last_reboot_time)}</span>
+    </div>
   </article>`;
+}
+
+function summaryBar(servers) {
+  if (!servers.length) return '';
+  const total = servers.length;
+  const healthy = servers.filter(s => (s.state || 'unknown') === 'healthy').length;
+  const down = servers.filter(s => ['down', 'rebooting', 'recovering'].includes(s.state || 'unknown')).length;
+  const suspect = servers.filter(s => (s.state || 'unknown') === 'suspect').length;
+  const allHealthy = down === 0 && suspect === 0;
+  const overallClass = allHealthy ? 'summary-healthy' : down > 0 ? 'summary-down' : 'summary-suspect';
+  const overallText = allHealthy ? '全部运行正常' : `${down} 台异常，${suspect} 台疑似`;
+  return `<div class="summary-bar ${overallClass}">
+    <span class="summary-icon">${allHealthy ? '🟢' : '🔴'}</span>
+    <span class="summary-text">${escapeHtml(overallText)}</span>
+    <span class="summary-detail">${total} 台服务器 · ${healthy} 台正常</span>
+  </div>`;
 }
 
 export function renderStatusPage(servers, settings = {}) {
@@ -141,7 +203,7 @@ export function renderStatusPage(servers, settings = {}) {
   const documentTitle = String(settings.site_title || 'ZJMF 服务器监控');
   const siteDescription = String(settings.site_description || 'Cloudflare Worker 按探测间隔执行 API / HTTP(S) / TCP 检测；连续失败 3 次后确认异常并执行重启。');
   const cards = servers.length
-    ? `<section class="service-group"><h2 class="group-title">未分组</h2><div class="grid" role="list">${servers.map(row).join('')}</div></section>`
+    ? `<section class="service-group"><h2 class="group-title">监控概览</h2><div class="grid" role="list">${servers.map(row).join('')}</div></section>`
     : '<p class="empty">暂无启用的监控服务器。</p>';
   return `<!doctype html>
 <html lang="zh-CN">
@@ -150,28 +212,132 @@ export function renderStatusPage(servers, settings = {}) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(documentTitle)}</title>
   <style>
-    :root{--bg:#f6f8fb;--panel:#fff;--ink:#0f1b2d;--muted:#7b8da8;--line:#d9e2ef;--track:#e8eef7;--ok:#10c98f;--bad:#ef5267;--warn:#f59e0b;--blue:#2563eb}
-    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 12% 0,rgba(16,201,143,.12),transparent 28%),linear-gradient(180deg,#fff,var(--bg));color:var(--ink);font-family:"Bahnschrift","Aptos Display","Microsoft YaHei UI",sans-serif}
-    main{width:min(760px,calc(100% - 32px));margin:0 auto;padding:54px 0}.pageNav{display:flex;justify-content:flex-end;margin-bottom:22px}.adminLink{border:1px solid var(--line);background:#fff;color:#0f1b2d;text-decoration:none;border-radius:999px;padding:10px 16px;font-weight:800;box-shadow:0 12px 28px rgba(15,27,45,.08)}
-    .hero{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:24px}.tag{color:#0b9f75;letter-spacing:.18em;font-size:12px;font-weight:900;text-transform:uppercase}h1{font-size:34px;margin:10px 0 6px;letter-spacing:-.05em}.lead{color:var(--muted);line-height:1.65;margin:0}
-    .service-title{font-size:28px;margin:22px 0 12px}.group-title{font-size:22px;margin:0 0 10px}.grid{display:grid;gap:14px;width:min(100%,600px)}.status-card{min-width:0;border:1px solid #cfd9e8;background:linear-gradient(180deg,#fff,#f9fbff);box-shadow:0 18px 44px rgba(15,27,45,.09);border-radius:20px;padding:18px;animation:rise .45s ease both}.status-card--healthy{border-color:#b9e9d9}.status-card--down,.status-card--recovering,.status-card--rebooting{border-color:#ffc4cc}
-    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.name-row{display:flex;gap:12px;align-items:flex-start}.dot{width:10px;height:10px;border-radius:99px;background:var(--ok);margin-top:8px;box-shadow:0 0 0 4px rgba(16,201,143,.13)}.status-card--down .dot,.status-card--rebooting .dot{background:var(--bad);box-shadow:0 0 0 4px rgba(239,82,103,.13)}h3{margin:0;font-size:22px}.name-row p{margin:2px 0 0;color:#5f718c}.badges{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.uptime,.state{border:1px solid #b8ecd8;background:#ecfdf6;color:#047857;border-radius:999px;padding:4px 10px;font-size:13px}
-    .caption{color:var(--muted);margin:18px 0 8px}.day-track{height:28px;border-radius:8px;background:var(--track);padding:0 3px;display:flex;gap:2px;align-items:stretch;overflow:visible}.day-segment{position:relative;flex:1;min-width:0;border-radius:6px;background:#cdd8e7;outline:0;transition:transform .16s ease,box-shadow .16s ease}.day-segment.placeholder{background:#dce5f2;opacity:.75}.day-segment.ok{background:linear-gradient(90deg,#34d399,#10c98f)}.day-segment.warn{background:#fbbf24}.day-segment.bad{background:var(--bad)}.day-empty{display:grid;place-items:center;width:100%;color:var(--muted);font-size:13px}
-    .probe-bars{height:30px;background:var(--track);border-radius:8px;padding:5px 6px;display:flex;gap:4px;align-items:end}.probe-bars span{position:relative;display:block;width:6px;border-radius:2px;outline:0;transition:transform .16s ease,box-shadow .16s ease}.probe-bars .ok{background:#10c98f}.probe-bars .bad{background:var(--bad)}.probe-bars .probe-placeholder{background:#d9e4f2;opacity:.85}.day-segment[data-tip]:hover,.day-segment[data-tip]:focus,.probe-bars span[data-tip]:hover,.probe-bars span[data-tip]:focus{box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(15,27,45,.20);transform:translateY(-7px);z-index:4}
-    .day-track span[data-tip]:hover:after,.day-track span[data-tip]:focus:after,.probe-bars span[data-tip]:hover:after,.probe-bars span[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:50%;bottom:30px;transform:translateX(-50%);z-index:6;white-space:pre;min-width:180px;background:#fff;border:1px solid var(--line);box-shadow:0 18px 36px rgba(15,27,45,.16);border-radius:12px;padding:10px 12px;color:var(--ink);font-size:13px}.day-track span[data-tip]:hover:before,.day-track span[data-tip]:focus:before,.probe-bars span[data-tip]:hover:before,.probe-bars span[data-tip]:focus:before{content:"";position:absolute;left:50%;bottom:24px;border:7px solid transparent;border-top-color:#fff;transform:translateX(-50%);z-index:7}
-    .card-foot{display:flex;gap:12px;flex-wrap:wrap;color:#6f819c;margin-top:10px}.sr-meta{font-size:12px;color:#8ba0bd;margin-top:8px}.history{margin-top:28px}.history-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:26px 0 12px}.history h2{font-size:24px;margin:0}.more{color:var(--blue);text-decoration:none;font-weight:700}.history-card{padding:0}.history-card ol{list-style:none;margin:0;padding:0;display:grid;gap:10px}.timeline-item{display:grid;grid-template-columns:156px 18px 1fr;gap:12px;align-items:start;padding:14px;border:1px solid var(--line);background:#fff;border-radius:16px}.timeline-item time{color:var(--muted);font-size:13px}.timeline-dot{width:10px;height:10px;border-radius:99px;background:var(--blue);margin-top:4px}.level-critical .timeline-dot{background:var(--bad)}.level-warning .timeline-dot{background:var(--warn)}.level-info .timeline-dot{background:var(--ok)}.timeline-item b{display:block}.timeline-item p{margin:4px 0 0;color:var(--muted)}.history-empty{padding:28px;border:1px dashed var(--line);border-radius:22px;color:var(--muted);background:#fff;text-align:center}.empty{padding:28px;border:1px dashed var(--line);border-radius:22px;color:var(--muted);background:#fff}footer{margin-top:26px;color:var(--muted);font-size:13px}.api{color:var(--blue);text-decoration:none}
-    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}@media(max-width:760px){.hero{display:block}.summary{justify-content:flex-start;margin-top:16px}.card-head{display:block}.badges{justify-content:flex-start;margin-top:12px}.history-head{display:block}.timeline-item{grid-template-columns:156px 18px 1fr}}
+    :root{--bg:#f0f4f8;--panel:#fff;--ink:#0f1b2d;--muted:#7b8da8;--line:#d9e2ef;--track:#e8eef7;--ok:#10c98f;--bad:#ef5267;--warn:#f59e0b;--blue:#2563eb;--card-radius:16px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;background:linear-gradient(135deg,#f8fafc 0%,#eef2f7 50%,#f0f4f8 100%);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC","Microsoft YaHei UI",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+    main{width:min(800px,calc(100% - 24px));margin:0 auto;padding:40px 0 60px}
+
+    .pageNav{display:flex;justify-content:flex-end;margin-bottom:20px}
+    .adminLink{border:1px solid rgba(0,0,0,.08);backdrop-filter:blur(8px);background:rgba(255,255,255,.85);color:var(--ink);text-decoration:none;border-radius:999px;padding:8px 18px;font-size:13px;font-weight:700;transition:all .2s}
+    .adminLink:hover{background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.08);transform:translateY(-1px)}
+
+    .hero{margin-bottom:28px}
+    .tag{display:inline-block;color:var(--ok);letter-spacing:.15em;font-size:11px;font-weight:800;text-transform:uppercase;margin-bottom:6px}
+    h1{font-size:32px;font-weight:800;letter-spacing:-.04em;margin-bottom:8px;background:linear-gradient(135deg,var(--ink),#2d3a4f);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .lead{color:var(--muted);line-height:1.6;font-size:15px;max-width:560px}
+
+    .summary-bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:var(--card-radius);margin-bottom:20px;font-size:14px;font-weight:600;animation:slideDown .35s ease both}
+    .summary-healthy{background:linear-gradient(135deg,rgba(16,201,143,.1),rgba(16,201,143,.05));border:1px solid rgba(16,201,143,.2);color:#047857}
+    .summary-down{background:linear-gradient(135deg,rgba(239,82,103,.1),rgba(239,82,103,.05));border:1px solid rgba(239,82,103,.2);color:#b91c1c}
+    .summary-suspect{background:linear-gradient(135deg,rgba(245,158,11,.1),rgba(245,158,11,.05));border:1px solid rgba(245,158,11,.2);color:#92400e}
+    .summary-icon{font-size:18px}
+    .summary-text{flex:1}
+    .summary-detail{opacity:.7;font-size:13px;font-weight:500}
+
+    .group-title{font-size:20px;font-weight:700;margin:0 0 14px;color:var(--ink)}
+    .grid{display:grid;gap:16px}
+
+    .status-card{min-width:0;border:1px solid rgba(0,0,0,.06);background:rgba(255,255,255,.9);backdrop-filter:blur(12px);box-shadow:0 1px 3px rgba(0,0,0,.04),0 8px 24px rgba(0,0,0,.04);border-radius:var(--card-radius);padding:20px;transition:all .25s ease;animation:slideUp .4s ease both}
+    .status-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.06),0 16px 40px rgba(0,0,0,.08);transform:translateY(-2px)}
+    .status-card--healthy{border-left:3px solid var(--ok)}
+    .status-card--suspect{border-left:3px solid var(--warn)}
+    .status-card--down,.status-card--rebooting,.status-card--recovering{border-left:3px solid var(--bad)}
+
+    .card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .name-row{display:flex;gap:12px;align-items:flex-start}
+    .dot{width:10px;height:10px;border-radius:50%;background:var(--ok);margin-top:7px;position:relative;flex-shrink:0}
+    .dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:rgba(16,201,143,.15);animation:pulse 2s ease-in-out infinite}
+    .status-card--suspect .dot{background:var(--warn)}
+    .status-card--suspect .dot::after{background:rgba(245,158,11,.15)}
+    .status-card--down .dot,.status-card--rebooting .dot,.status-card--recovering .dot{background:var(--bad)}
+    .status-card--down .dot::after,.status-card--rebooting .dot::after,.status-card--recovering .dot::after{background:rgba(239,82,103,.15)}
+    .status-card--rebooting .dot{animation:spin 1s linear infinite}
+    .status-card--recovering .dot{animation:pulse 1s ease-in-out infinite}
+
+    h3{margin:0;font-size:18px;font-weight:700;line-height:1.3}
+    .method-tag{margin:2px 0 0;font-size:12px;color:var(--muted);font-weight:500}
+    .badges{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+    .uptime{background:rgba(16,201,143,.1);color:#047857;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+    .state{background:rgba(37,99,235,.08);color:var(--blue);border-radius:999px;padding:3px 10px;font-size:12px;font-weight:600}
+    .status-card--down .state{background:rgba(239,82,103,.1);color:#b91c1c}
+    .status-card--rebooting .state{background:rgba(245,158,11,.1);color:#92400e}
+    .status-card--recovering .state{background:rgba(245,158,11,.1);color:#92400e}
+    .status-card--suspect .state{background:rgba(245,158,11,.1);color:#92400e}
+
+    .caption{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin:16px 0 6px}
+    .day-track{height:28px;border-radius:8px;background:var(--track);padding:0 3px;display:flex;gap:2px;align-items:stretch;overflow:visible}
+    .day-segment{position:relative;flex:1;min-width:0;border-radius:6px;background:#cdd8e7;outline:0;transition:all .16s ease}
+    .day-segment.placeholder{background:#dce5f2;opacity:.7}
+    .day-segment.ok{background:linear-gradient(180deg,#34d399,#10c98f)}
+    .day-segment.warn{background:#fbbf24}
+    .day-segment.bad{background:var(--bad)}
+    .day-empty{display:grid;place-items:center;width:100%;color:var(--muted);font-size:13px}
+
+    .probe-bars{height:32px;background:var(--track);border-radius:8px;padding:5px 6px;display:flex;gap:3px;align-items:end}
+    .probe-bars span{position:relative;display:block;width:5px;border-radius:2px;outline:0;transition:all .16s ease}
+    .probe-bars .ok{background:linear-gradient(180deg,#34d399,#10c98f)}
+    .probe-bars .bad{background:var(--bad)}
+    .probe-bars .probe-placeholder{background:#d9e4f2;opacity:.8}
+
+    .day-segment[data-tip]:hover,.day-segment[data-tip]:focus,.probe-bars span[data-tip]:hover,.probe-bars span[data-tip]:focus{box-shadow:0 0 0 2px rgba(15,27,45,.15);transform:translateY(-6px);z-index:4}
+    .day-track span[data-tip]:hover:after,.day-track span[data-tip]:focus:after,.probe-bars span[data-tip]:hover:after,.probe-bars span[data-tip]:focus:after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);z-index:10;white-space:pre;min-width:180px;background:#fff;border:1px solid rgba(0,0,0,.08);box-shadow:0 8px 24px rgba(0,0,0,.12);border-radius:10px;padding:10px 12px;color:var(--ink);font-size:12px;line-height:1.5;pointer-events:none}
+    .day-track span[data-tip]:hover:before,.day-track span[data-tip]:focus:before,.probe-bars span[data-tip]:hover:before,.probe-bars span[data-tip]:focus:before{content:"";position:absolute;left:50%;bottom:calc(100% + 2px);border:6px solid transparent;border-top-color:#fff;transform:translateX(-50%);z-index:11}
+
+    .card-foot{display:flex;gap:16px;flex-wrap:wrap;color:#6f819c;margin-top:12px;font-size:13px}
+    .latency-item b{color:var(--ink);font-weight:600}
+    .time-item{color:var(--muted);font-size:12px}
+
+    .sr-meta{font-size:12px;color:#8ba0bd;margin-top:8px;display:flex;gap:6px;align-items:center}
+    .sep{opacity:.4}
+
+    .history{margin-top:36px}
+    .history-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 14px}
+    .history h2{font-size:20px;font-weight:700}
+    .more{color:var(--blue);text-decoration:none;font-weight:600;font-size:14px;transition:opacity .2s}
+    .more:hover{opacity:.7}
+
+    .history-card ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+    .timeline-item{display:grid;grid-template-columns:140px 28px 1fr;gap:10px;align-items:start;padding:12px 14px;border:1px solid rgba(0,0,0,.05);background:rgba(255,255,255,.8);border-radius:12px;transition:all .2s ease}
+    .timeline-item:hover{background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+    .timeline-item time{color:var(--muted);font-size:12px;font-weight:500}
+    .timeline-dot{font-size:14px;line-height:20px;text-align:center}
+    .timeline-item b{display:block;font-size:14px}
+    .timeline-item p{margin:2px 0 0;color:var(--muted);font-size:13px}
+    .history-empty{padding:32px;border:1px dashed var(--line);border-radius:var(--card-radius);color:var(--muted);background:rgba(255,255,255,.5);text-align:center}
+    .empty{padding:32px;border:1px dashed var(--line);border-radius:var(--card-radius);color:var(--muted);background:rgba(255,255,255,.5);text-align:center}
+
+    footer{margin-top:32px;padding-top:20px;border-top:1px solid rgba(0,0,0,.05);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;align-items:center}
+    .api{color:var(--blue);text-decoration:none;font-weight:600}
+    .api:hover{text-decoration:underline}
+
+    @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+    @media(max-width:640px){
+      main{padding:24px 0 40px}
+      h1{font-size:26px}
+      .summary-bar{flex-wrap:wrap}
+      .card-head{flex-direction:column;gap:8px}
+      .badges{justify-content:flex-start}
+      .card-foot{gap:12px}
+      .timeline-item{grid-template-columns:1fr;gap:6px}
+      .timeline-item time{font-size:11px}
+    }
   </style>
 </head>
 <body>
   <main>
     <nav class="pageNav"><a class="adminLink" href="/admin">管理面板</a></nav>
     <section class="hero">
-      <div><span class="tag">ZJMF Monitor</span><h1>${escapeHtml(siteTitle)}</h1><p class="lead">${escapeHtml(siteDescription)}</p></div>
+      <span class="tag">ZJMF Monitor</span>
+      <h1>${escapeHtml(siteTitle)}</h1>
+      <p class="lead">${escapeHtml(siteDescription)}</p>
     </section>
+    ${summaryBar(servers)}
     ${cards}
     ${eventHistory(servers)}
-    <footer>数据接口：<a class="api" href="/api/status">/api/status</a></footer>
+    <footer><span>Revelation服务器监控系统</span><a class="api" href="/api/status">/api/status</a></footer>
   </main>
 </body>
 </html>`;
