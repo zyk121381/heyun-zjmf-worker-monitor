@@ -170,9 +170,9 @@ function eventHistory(servers) {
     .sort((a, b) => Number(b.created_at || 0) - Number(a.created_at || 0))
     .slice(0, 5);
   if (!events.length) {
-    return '<section class="history"><div class="history-head"><h2>事件历史</h2><a class="more" href="/admin">查看更多 →</a></div><div class="history-card"><p class="history-empty">暂无历史事件</p></div></section>';
+    return '<section class="history"><div class="history-head"><h2>事件历史</h2></div><div class="history-card"><p class="history-empty">暂无历史事件</p></div></section>';
   }
-  return `<section class="history"><div class="history-head"><h2>事件历史</h2><a class="more" href="/admin">查看更多 →</a></div><div class="history-card"><ol>${events.map(eventRow).join('')}</ol></div></section>`;
+  return `<section class="history"><div class="history-head"><h2>事件历史</h2></div><div class="history-card"><ol>${events.map(eventRow).join('')}</ol></div></section>`;
 }
 
 function row(server) {
@@ -332,8 +332,6 @@ export function renderStatusPage(servers, settings = {}) {
     .history-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin:0 0 14px}
     .history h2{font-size:20px;font-weight:700;color:var(--brand-dark);display:flex;align-items:center;gap:8px}
     .history h2::before{content:'';width:4px;height:20px;background:linear-gradient(180deg,var(--brand),var(--brand-dark));border-radius:2px}
-    .more{color:var(--brand);text-decoration:none;font-weight:600;font-size:14px;transition:all .2s;padding:4px 12px;border-radius:6px;background:var(--brand-light)}
-    .more:hover{background:var(--brand);color:#fff}
 
     .history-card ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
     .timeline-item{display:grid;grid-template-columns:160px 32px 1fr;gap:12px;align-items:start;padding:14px 16px;border:1px solid var(--brand-border);background:linear-gradient(135deg,rgba(255,253,249,.9),rgba(250,247,242,.8));border-radius:12px;transition:all .2s ease}
@@ -349,6 +347,10 @@ export function renderStatusPage(servers, settings = {}) {
     .footer-brand{font-size:13px;color:var(--muted);font-weight:500}
     .footer-brand a{color:var(--brand-dark);text-decoration:none;font-weight:600;transition:all .2s;padding:2px 6px;border-radius:4px;background:var(--brand-light)}
     .footer-brand a:hover{color:#fff;background:var(--brand)}
+    .footer-links{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+    .footer-links a{color:var(--brand-dark);text-decoration:none;font-weight:600;font-size:13px;transition:all .2s;padding:4px 10px;border-radius:6px;background:var(--brand-light)}
+    .footer-links a:hover{background:var(--brand);color:#fff}
+    .footer-links a svg{width:14px;height:14px;vertical-align:-2px;margin-right:3px}
     .footer-sponsors{font-size:12px;color:var(--muted)}
     .footer-sponsors a{display:inline-flex;align-items:center;vertical-align:middle;transition:opacity .2s;text-decoration:none}
     .footer-sponsors a:hover{opacity:.8}
@@ -356,6 +358,7 @@ export function renderStatusPage(servers, settings = {}) {
     .footer-api{font-size:12px}
     .api{color:var(--brand);text-decoration:none;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--brand-light);transition:all .2s}
     .api:hover{background:var(--brand);color:#fff}
+    .footer-version{font-size:12px;color:var(--muted);margin-top:4px}
 
     @keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
     @keyframes slideDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
@@ -388,7 +391,13 @@ export function renderStatusPage(servers, settings = {}) {
     ${eventHistory(servers)}
     <footer>
       <div class="footer-brand">Copyright &copy; 2022~${currentYear} <a href="https://www.valerianblog.link/" target="_blank">Revelation</a></div>
+      <div class="footer-links">
+        <a href="https://github.com/zyk121381/" target="_blank"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a>
+        <a href="https://www.valerianblog.link/" target="_blank"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M12.31 3.01l.79.79a.5.5 0 010 .71l-6.5 6.5a.5.5 0 01-.71 0l-3.5-3.5a.5.5 0 010-.71l.79-.79L8 8.79l4.31-5.78zM2 12h12v2H2v-2z"/></svg>Blog</a>
+        <a href="https://feedback.valerianblog.link/" target="_blank"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M0 4a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H2a2 2 0 01-2-2V4zm2-1a1 1 0 00-1 1v.217l7 4.2 7-4.2V4a1 1 0 00-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 002 13h12a1 1 0 00.966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/></svg>Contact</a>
+      </div>
       <div class="footer-sponsors"><p style="display: inline-flex; align-items: center; margin: 0"><a href="https://www.heyunidc.cn/aff/GXMRNREQ" target="_blank"><img src="https://www.heyunidc.cn/themes/web/www/upload/local68c30272ab53b.png" alt="核云" height="17" style="margin: 0 3px;"></a> | <a href="https://www.cloudflare-cn.com/" target="_blank"><img src="https://cf-assets.cloudflare-cn.com/dzlvafdwdttg/69wNwfiY5mFmgpd9eQFW6j/d5131c08085a977aa70f19e7aada3fa9/1pixel-down__1_.svg" alt="Cloudflare" height="18" style="margin: 0 3px;"></a></p></div>
+      <div class="footer-version">v0.1.0 · 最后更新 ${escapeHtml(fmtTime(Date.now() / 1000))}</div>
     </footer>
   </main>
 </body>

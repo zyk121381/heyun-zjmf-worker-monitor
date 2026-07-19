@@ -48,7 +48,6 @@ test('状态页渲染服务器状态并转义 HTML', () => {
   assert.match(html, /translateY\(-6px\)/);
   assert.doesNotMatch(html, /active/);
   assert.match(html, /事件历史/);
-  assert.match(html, /查看更多/);
   assert.match(html, /history-card/);
   assert.equal((html.match(/class="timeline-item/g) || []).length, 3);
   assert.match(html, /检测异常/);
