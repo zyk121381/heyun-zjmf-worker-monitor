@@ -70,9 +70,7 @@ jobs:
         run: |
           COMMIT="${GITHUB_SHA::7}"
           BUILD_TIME="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          cat > src/version.js <<EOF
-export const VERSION='0.1.0';export const COMMIT='${COMMIT}';export const BUILD_TIME='${BUILD_TIME}';
-EOF
+          echo "export const VERSION='0.1.0';export const COMMIT='${COMMIT}';export const BUILD_TIME='${BUILD_TIME}';" > src/version.js
           npx wrangler@latest deploy | tee deploy.log
           url="$(grep -Eo 'https://[^ ]+\.workers\.dev' deploy.log | head -n 1 || true)"
           echo "worker_url=$url" >> "$GITHUB_OUTPUT"
