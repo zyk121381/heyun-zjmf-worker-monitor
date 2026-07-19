@@ -2,4 +2,6 @@ cloudflare-worker/node_modules/
 cloudflare-worker/.wrangler/
 cloudflare-worker/.wrangler-dry-run/
 cloudflare-worker/.dev.vars
+cloudflare-worker/src/version.js
+edgeone-pages/src/version.js
 *.log
